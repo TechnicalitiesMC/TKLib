@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+license="All rights reserved"
+
+[[mods]]
+modId="tklib"
+version="${file.jarVersion}"
+displayName="TKLib"
+authors="amadornes"
+description='''
+Library mod for the Technicalities family of mods.
+'''
+
+[[dependencies.tklib]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.tklib]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"
