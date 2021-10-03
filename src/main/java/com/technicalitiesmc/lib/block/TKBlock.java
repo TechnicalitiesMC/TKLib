@@ -1,59 +1,112 @@
 package com.technicalitiesmc.lib.block;
 
-import com.technicalitiesmc.lib.util.TickingSide;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fmllegacy.RegistryObject;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class TKBlock extends Block {
+public abstract class TKBlock extends Block implements BlockComponentContext {
+
+    private final List<BlockComponent> components = new ArrayList<>();
 
     public TKBlock(Properties properties) {
         super(properties);
     }
 
-    public static class WithEntity<TEntity extends TKBlockEntity> extends TKBlock implements EntityBlock {
+    // Component management and initialization
 
-        private final RegistryObject<BlockEntityType<TEntity>> entityType;
-        private final BlockEntityTicker<TEntity> serverTicker, clientTicker;
+    final <T extends BlockComponent> T doAddComponent(BlockComponentConstructor<T> constructor) {
+        var component = constructor.create(this);
+        components.add(component);
+        return component;
+    }
 
-        public WithEntity(Properties properties, RegistryObject<BlockEntityType<TEntity>> entityType, TickingSide tickingSide) {
+    protected final <T extends BlockComponent.WithoutData> T addComponent(BlockComponentConstructor<T> constructor) {
+        return doAddComponent(constructor);
+    }
+
+    protected final Iterable<BlockComponent> getComponents() {
+        return components;
+    }
+
+    // Helpers
+
+    @Override
+    public final TKBlock getBlock() {
+        return this;
+    }
+
+    public final Component getDefaultContainerName() {
+        var name = getRegistryName();
+        return new TranslatableComponent("container." + name.getNamespace() + "." + name.getPath());
+    }
+
+    // Implementation
+
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        for (BlockComponent component : getComponents()) {
+            var result = component.use(state, level, pos, player, hand, hit);
+            if (result != InteractionResult.PASS)
+                return result;
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+        for (BlockComponent component : getComponents()) {
+            component.onRemove(state, level, pos, newState, moving);
+        }
+        super.onRemove(state, level, pos, newState, moving);
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        var signal = 0;
+        for (BlockComponent component : getComponents()) {
+            signal = Math.max(signal, component.getAnalogOutputSignal(state, level, pos));
+        }
+        return signal;
+    }
+
+    public static class WithEntity extends TKBlock implements EntityBlock {
+
+        final RegistryObject<BlockEntityType<TKBlockEntity>> entityType;
+        final Map<String, BlockComponent.WithData> components = new HashMap<>();
+
+        public WithEntity(Properties properties, RegistryObject<BlockEntityType<TKBlockEntity>> entityType) {
             super(properties);
             this.entityType = entityType;
-            this.serverTicker = tickingSide.isServer() ? this::tickServer : null;
-            this.clientTicker = tickingSide.isClient() ? this::tickClient : null;
         }
 
-        protected void tickServer(Level level, BlockPos pos, BlockState state, TEntity entity) {
-        }
-
-        protected void tickClient(Level level, BlockPos pos, BlockState state, TEntity entity) {
+        protected final <T extends BlockComponent.WithData<?>> T addComponent(String name, BlockComponentConstructor<T> constructor) {
+            var component = doAddComponent(constructor);
+            components.put(name, component);
+            return component;
         }
 
         @Nullable
         @Override
-        public final BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
             return entityType.get().create(pos, state);
-        }
-
-        @Nullable
-        @Override
-        public final <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
-            return (BlockEntityTicker<T>) (level.isClientSide() ? clientTicker : serverTicker);
-        }
-
-        @Nullable
-        @Override
-        public <T1 extends BlockEntity> GameEventListener getListener(Level level, T1 entity) {
-            return EntityBlock.super.getListener(level, entity);
         }
 
     }
