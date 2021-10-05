@@ -1,5 +1,6 @@
 package com.technicalitiesmc.lib.inventory;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -37,6 +38,14 @@ public interface ItemHolder {
 
     default Container asVanillaContainer() {
         return new VanillaContainerAdapter(this);
+    }
+
+    default NonNullList<ItemStack> copyToList() {
+        var list = NonNullList.withSize(getSize(), ItemStack.EMPTY);
+        for (int i = 0; i < getSize(); i++) {
+            list.set(i, get(i).copy());
+        }
+        return list;
     }
 
 }

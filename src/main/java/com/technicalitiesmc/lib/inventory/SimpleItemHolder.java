@@ -75,6 +75,14 @@ public class SimpleItemHolder implements SerializableItemHolder, INBTSerializabl
         }
     }
 
+    public static SimpleItemHolder from(NonNullList<ItemStack> items) {
+        var inventory = new SimpleItemHolder(items.size());
+        for (int i = 0; i < items.size(); i++) {
+            inventory.set(i, items.get(i).copy());
+        }
+        return inventory;
+    }
+
     private class Slice implements ItemHolder {
 
         private final int from, size;
