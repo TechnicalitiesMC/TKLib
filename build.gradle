@@ -1,13 +1,16 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
@@ -17,6 +20,10 @@ archivesBaseName = 'TKLib'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
+mixin {
+    add sourceSets.main, 'tklib.mixin.json'
+}
+
 minecraft {
     mappings channel: 'official', version: _mcversion
 
@@ -25,6 +32,8 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run/client')
+
+            arg '-mixin.config=tklib.mixin.json'
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -39,6 +48,8 @@ minecraft {
         server {
             workingDirectory project.file('run/server')
 
+            arg '-mixin.config=tklib.mixin.json'
+
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
 
@@ -51,6 +62,8 @@ minecraft {
 
         data {
             workingDirectory project.file('run/data')
+
+            arg '-mixin.config=tklib.mixin.json'
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
@@ -69,13 +82,17 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    maven { url = 'https://repo.spongepowered.org/maven' }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${_mcversion}-${_forgeversion}"
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest.attributes([
         'Specification-Title'     : 'tklib',
         'Specification-Vendor'    : 'amadornes',
@@ -83,7 +100,8 @@ jar {
         'Implementation-Title'    : project.name,
         'Implementation-Version'  : project.jar.archiveVersion,
         'Implementation-Vendor'   : 'amadornes',
-        'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+        'MixinConfigs'            : 'tklib.mixin.json'
     ])
 }
 
