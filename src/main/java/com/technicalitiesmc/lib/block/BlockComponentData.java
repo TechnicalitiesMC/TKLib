@@ -1,7 +1,10 @@
 package com.technicalitiesmc.lib.block;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,6 +34,18 @@ public abstract class BlockComponentData implements ICapabilityProvider {
     }
 
     public void load(CompoundTag tag) {
+    }
+
+    protected final Level getLevel() {
+        return context.getLevel();
+    }
+
+    protected final BlockPos getBlockPos() {
+        return context.getBlockPos();
+    }
+
+    protected final BlockState getBlockState() {
+        return context.getBlockState();
     }
 
     protected final void markUnsaved() {
