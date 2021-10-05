@@ -54,7 +54,7 @@ public final class TKBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void invalidateCaps() {
+    public void invalidateCaps() {
         for (BlockComponentData data : componentData.values()) {
             data.invalidateCaps();
         }
