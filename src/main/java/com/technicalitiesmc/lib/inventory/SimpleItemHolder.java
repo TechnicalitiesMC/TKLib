@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-public class SimpleItemHolder implements ItemHolder, INBTSerializable<CompoundTag> {
+public class SimpleItemHolder implements SerializableItemHolder, INBTSerializable<CompoundTag> {
 
     private final NonNullList<ItemStack> items;
     @Nullable

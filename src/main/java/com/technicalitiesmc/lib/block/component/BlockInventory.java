@@ -1,10 +1,11 @@
 package com.technicalitiesmc.lib.block.component;
 
 import com.technicalitiesmc.lib.block.BlockComponent;
-import com.technicalitiesmc.lib.block.BlockComponentData;
 import com.technicalitiesmc.lib.block.BlockComponentContext;
+import com.technicalitiesmc.lib.block.BlockComponentData;
 import com.technicalitiesmc.lib.block.BlockComponentDataContext;
 import com.technicalitiesmc.lib.inventory.ItemHolder;
+import com.technicalitiesmc.lib.inventory.SerializableItemHolder;
 import com.technicalitiesmc.lib.inventory.SimpleItemHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +37,15 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     }
 
     public BlockInventory(BlockComponentContext context, int slots, EnumSet<Flag> flags) {
-        super(context, ctx -> new Data(ctx, slots, flags));
+        this(context, callback -> new SimpleItemHolder(slots, callback), flags);
+    }
+
+    public BlockInventory(BlockComponentContext context, InventoryFactory inventoryFactory, Flag... flags) {
+        this(context, inventoryFactory, EnumSet.copyOf(Arrays.asList(flags)));
+    }
+
+    public BlockInventory(BlockComponentContext context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
+        super(context, ctx -> new Data(ctx, inventoryFactory, flags));
         this.shouldDropItemsOnBreak = flags.contains(Flag.DROP_ON_BREAK);
     }
 
@@ -67,15 +76,15 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
         private final boolean shouldUpdateComparators, shouldExposeCaps;
 
-        private final SimpleItemHolder inventory;
+        private final SerializableItemHolder inventory;
         private final LazyOptional<IItemHandler> itemHandler;
 
-        private Data(BlockComponentDataContext context, int slots, EnumSet<Flag> flags) {
+        private Data(BlockComponentDataContext context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
             super(context);
             this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
             this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);
 
-            this.inventory = new SimpleItemHolder(slots, this::onInventoryUpdate);
+            this.inventory = inventoryFactory.createInventory(this::onInventoryUpdate);
             this.itemHandler = shouldExposeCaps ? LazyOptional.of(inventory::asItemHandler) : LazyOptional.empty();
         }
 
@@ -117,6 +126,13 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
         COMPARATOR_OUTPUT,
         DROP_ON_BREAK,
         EXPOSE_ITEM_HANDLER
+    }
+
+    @FunctionalInterface
+    public interface InventoryFactory {
+
+        SerializableItemHolder createInventory(Runnable updateCallback);
+
     }
 
 }
