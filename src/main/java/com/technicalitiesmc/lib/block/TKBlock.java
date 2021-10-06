@@ -5,7 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -57,8 +60,18 @@ public abstract class TKBlock extends Block implements BlockComponentContext {
         return new TranslatableComponent("container." + name.getNamespace() + "." + name.getPath());
     }
 
-    // Implementation
+    protected final InteractionResult openMenu(Level level, Player player, MenuConstructor constructor) {
+        return openMenu(level, player, constructor, getDefaultContainerName());
+    }
 
+    protected final InteractionResult openMenu(Level level, Player player, MenuConstructor constructor, Component title) {
+        if (!level.isClientSide()) {
+            player.openMenu(new SimpleMenuProvider(constructor, title));
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    // Implementation
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {

@@ -4,8 +4,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -30,6 +36,8 @@ public class TKItem extends Item {
         super(properties);
     }
 
+    // Data management and initialization
+
     protected final <T extends INBTSerializable<CompoundTag>> DataHandle<T> addData(String name, DataFactory<T> factory) {
         return addData(name, INBTSerializable::serializeNBT, (stack, saveCallback, tag) -> {
             var instance = factory.create(stack, saveCallback);
@@ -43,6 +51,21 @@ public class TKItem extends Item {
         dataClasses.add(handle);
         return handle;
     }
+
+    // Helpers
+
+    protected final InteractionResultHolder<ItemStack> openMenu(Level level, Player player, ItemStack stack, MenuConstructor constructor) {
+        return openMenu(level, player, stack, constructor, getDefaultContainerName());
+    }
+
+    protected final InteractionResultHolder<ItemStack> openMenu(Level level, Player player, ItemStack stack, MenuConstructor constructor, Component title) {
+        if (!level.isClientSide()) {
+            player.openMenu(new SimpleMenuProvider(constructor, title));
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+    }
+
+    // Implementation
 
     @Nullable
     @Override
