@@ -51,7 +51,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     // API
 
-    public ItemHolder get(BlockGetter level, BlockPos pos) {
+    public ItemHolder at(BlockGetter level, BlockPos pos) {
         return getData(level, pos).inventory;
     }
 

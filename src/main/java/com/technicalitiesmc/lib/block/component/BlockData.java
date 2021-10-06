@@ -13,7 +13,7 @@ public class BlockData<T extends BlockComponentData> extends BlockComponent.With
         super(context, constructor);
     }
 
-    public T get(BlockGetter level, BlockPos pos) {
+    public T at(BlockGetter level, BlockPos pos) {
         return getData(level, pos);
     }
 
