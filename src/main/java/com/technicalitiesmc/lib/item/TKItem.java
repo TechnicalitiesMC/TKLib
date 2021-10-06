@@ -28,7 +28,7 @@ import java.util.Map;
 public class TKItem extends Item {
 
     @CapabilityInject(DataStore.class)
-    private static final Capability<DataStore> DATA_STORE_CAPABILITY = null;
+    private static Capability<DataStore> DATA_STORE_CAPABILITY;
 
     private final List<DataHandle<?>> dataClasses = new ArrayList<>();
 

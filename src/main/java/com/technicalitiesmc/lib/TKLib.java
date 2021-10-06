@@ -1,5 +1,6 @@
 package com.technicalitiesmc.lib;
 
+import com.technicalitiesmc.lib.init.TKLibCapabilities;
 import com.technicalitiesmc.lib.init.TKLibMenus;
 import com.technicalitiesmc.lib.network.TKLibNetworkHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +15,7 @@ public class TKLib {
     public TKLib() {
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
+        bus.addListener(TKLibCapabilities::onCapabilityRegistration);
 
         TKLibMenus.REGISTRY.register(bus);
     }
