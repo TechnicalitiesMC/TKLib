@@ -4,7 +4,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class TKItem extends Item {
 
@@ -31,6 +31,7 @@ public class TKItem extends Item {
     private static Capability<DataStore> DATA_STORE_CAPABILITY;
 
     private final List<DataHandle<?>> dataClasses = new ArrayList<>();
+    private final Map<Capability, Function<ItemStack, ? extends LazyOptional>> capabilitySuppliers = new HashMap<>();
 
     public TKItem(Properties properties) {
         super(properties);
@@ -52,6 +53,10 @@ public class TKItem extends Item {
         return handle;
     }
 
+    protected final <T> void addCapability(Capability<T> capability, Function<ItemStack, LazyOptional<T>> supplier) {
+        capabilitySuppliers.put(capability, supplier);
+    }
+
     // Helpers
 
     protected final InteractionResultHolder<ItemStack> openMenu(Level level, Player player, ItemStack stack, MenuConstructor constructor) {
@@ -71,14 +76,27 @@ public class TKItem extends Item {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         var dataStore = LazyOptional.of(() -> new DataStore(stack));
+        var capabilityCache = new HashMap<Capability, LazyOptional>();
         return new ICapabilityProvider() {
+            private <T> LazyOptional<T> computeCached(Capability<T> capability) {
+                var supplier = capabilitySuppliers.get(capability);
+                return supplier != null ? supplier.apply(stack) : null;
+            }
+
             @Nonnull
             @Override
-            public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-                if (cap == DATA_STORE_CAPABILITY) {
+            public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction side) {
+                if (capability == DATA_STORE_CAPABILITY) {
                     return dataStore.cast();
                 }
-                return TKItem.this.getCapability(stack, cap);
+
+                var customCap = TKItem.this.getCapability(stack, capability);
+                if (customCap.isPresent()) {
+                    return customCap;
+                }
+
+                var cached = capabilityCache.computeIfAbsent(capability, this::computeCached);
+                return cached != null ? cached : LazyOptional.empty();
             }
         };
     }
