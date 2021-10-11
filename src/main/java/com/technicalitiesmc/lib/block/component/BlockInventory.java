@@ -33,7 +33,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     private final boolean shouldDropItemsOnBreak;
 
     public BlockInventory(BlockComponentContext context, int slots, Flag... flags) {
-        this(context, slots, EnumSet.copyOf(Arrays.asList(flags)));
+        this(context, slots, flags.length != 0 ? EnumSet.copyOf(Arrays.asList(flags)) : EnumSet.noneOf(Flag.class));
     }
 
     public BlockInventory(BlockComponentContext context, int slots, EnumSet<Flag> flags) {
