@@ -13,9 +13,9 @@ import java.util.Objects;
 
 public abstract class BlockComponent {
 
-    final BlockComponentContext context;
+    final Context context;
 
-    private BlockComponent(BlockComponentContext context) {
+    private BlockComponent(Context context) {
         this.context = context;
     }
 
@@ -36,7 +36,7 @@ public abstract class BlockComponent {
 
     public static abstract class WithoutData extends BlockComponent {
 
-        public WithoutData(BlockComponentContext context) {
+        public WithoutData(Context context) {
             super(context);
         }
 
@@ -44,14 +44,14 @@ public abstract class BlockComponent {
 
     public static abstract class WithData<T extends BlockComponentData> extends BlockComponent {
 
-        private final BlockComponentDataConstructor<T> constructor;
+        private final BlockComponentData.Constructor<T> constructor;
 
-        public WithData(BlockComponentContext context, BlockComponentDataConstructor<T> constructor) {
+        public WithData(Context context, BlockComponentData.Constructor<T> constructor) {
             super(context);
             this.constructor = constructor;
         }
 
-        final T createData(BlockComponentDataContext context) {
+        final T createData(BlockComponentData.Context context) {
             return constructor.create(context);
         }
 
@@ -59,6 +59,19 @@ public abstract class BlockComponent {
             var entity = Objects.requireNonNull(level.getBlockEntity(pos));
             return ((TKBlockEntity) entity).get(this);
         }
+
+    }
+
+    @FunctionalInterface
+    public static interface Constructor<T> {
+
+        T create(Context context);
+
+    }
+
+    public static interface Context {
+
+        TKBlock getBlock();
 
     }
 

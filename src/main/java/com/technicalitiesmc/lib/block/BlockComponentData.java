@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
 
 public abstract class BlockComponentData implements ICapabilityProvider {
 
-    private final BlockComponentDataContext context;
+    private final Context context;
 
-    protected BlockComponentData(BlockComponentDataContext context) {
+    protected BlockComponentData(Context context) {
         this.context = context;
     }
 
@@ -54,6 +54,27 @@ public abstract class BlockComponentData implements ICapabilityProvider {
 
     protected final void updateComparators() {
         context.updateComparators();
+    }
+
+    @FunctionalInterface
+    public interface Constructor<T extends BlockComponentData> {
+
+        T create(Context context);
+
+    }
+
+    public interface Context {
+
+        Level getLevel();
+
+        BlockPos getBlockPos();
+
+        BlockState getBlockState();
+
+        void markUnsaved();
+
+        void updateComparators();
+
     }
 
 }

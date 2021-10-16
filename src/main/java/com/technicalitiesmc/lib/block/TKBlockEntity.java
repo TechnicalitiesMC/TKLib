@@ -81,7 +81,7 @@ public final class TKBlockEntity extends BlockEntity {
         });
     }
 
-    private class Context implements BlockComponentDataContext {
+    private class Context implements BlockComponentData.Context {
 
         @Override
         public Level getLevel() {

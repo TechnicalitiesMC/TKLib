@@ -1,9 +1,7 @@
 package com.technicalitiesmc.lib.block.component;
 
 import com.technicalitiesmc.lib.block.BlockComponent;
-import com.technicalitiesmc.lib.block.BlockComponentContext;
 import com.technicalitiesmc.lib.block.BlockComponentData;
-import com.technicalitiesmc.lib.block.BlockComponentDataContext;
 import com.technicalitiesmc.lib.inventory.ItemHolder;
 import com.technicalitiesmc.lib.inventory.SerializableItemHolder;
 import com.technicalitiesmc.lib.inventory.SimpleItemHolder;
@@ -32,19 +30,19 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     private final boolean shouldDropItemsOnBreak;
 
-    public BlockInventory(BlockComponentContext context, int slots, Flag... flags) {
+    public BlockInventory(Context context, int slots, Flag... flags) {
         this(context, slots, flags.length != 0 ? EnumSet.copyOf(Arrays.asList(flags)) : EnumSet.noneOf(Flag.class));
     }
 
-    public BlockInventory(BlockComponentContext context, int slots, EnumSet<Flag> flags) {
+    public BlockInventory(Context context, int slots, EnumSet<Flag> flags) {
         this(context, callback -> new SimpleItemHolder(slots, callback), flags);
     }
 
-    public BlockInventory(BlockComponentContext context, InventoryFactory inventoryFactory, Flag... flags) {
+    public BlockInventory(Context context, InventoryFactory inventoryFactory, Flag... flags) {
         this(context, inventoryFactory, EnumSet.copyOf(Arrays.asList(flags)));
     }
 
-    public BlockInventory(BlockComponentContext context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
+    public BlockInventory(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
         super(context, ctx -> new Data(ctx, inventoryFactory, flags));
         this.shouldDropItemsOnBreak = flags.contains(Flag.DROP_ON_BREAK);
     }
@@ -79,7 +77,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
         private final SerializableItemHolder inventory;
         private final LazyOptional<IItemHandler> itemHandler;
 
-        private Data(BlockComponentDataContext context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
+        private Data(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
             super(context);
             this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
             this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);

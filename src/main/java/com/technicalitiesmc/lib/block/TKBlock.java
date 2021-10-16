@@ -7,7 +7,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TKBlock extends Block implements BlockComponentContext {
+public abstract class TKBlock extends Block implements BlockComponent.Context {
 
     private final List<BlockComponent> components = new ArrayList<>();
 
@@ -34,13 +33,13 @@ public abstract class TKBlock extends Block implements BlockComponentContext {
 
     // Component management and initialization
 
-    final <T extends BlockComponent> T doAddComponent(BlockComponentConstructor<T> constructor) {
+    final <T extends BlockComponent> T doAddComponent(BlockComponent.Constructor<T> constructor) {
         var component = constructor.create(this);
         components.add(component);
         return component;
     }
 
-    protected final <T extends BlockComponent.WithoutData> T addComponent(BlockComponentConstructor<T> constructor) {
+    protected final <T extends BlockComponent.WithoutData> T addComponent(BlockComponent.Constructor<T> constructor) {
         return doAddComponent(constructor);
     }
 
@@ -110,7 +109,7 @@ public abstract class TKBlock extends Block implements BlockComponentContext {
             this.entityType = entityType;
         }
 
-        protected final <T extends BlockComponent.WithData<?>> T addComponent(String name, BlockComponentConstructor<T> constructor) {
+        protected final <T extends BlockComponent.WithData<?>> T addComponent(String name, BlockComponent.Constructor<T> constructor) {
             var component = doAddComponent(constructor);
             components.put(name, component);
             return component;
