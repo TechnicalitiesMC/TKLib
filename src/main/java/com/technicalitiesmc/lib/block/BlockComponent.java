@@ -1,5 +1,6 @@
 package com.technicalitiesmc.lib.block;
 
+import com.technicalitiesmc.lib.block.multipart.Multipart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -55,8 +56,8 @@ public abstract class BlockComponent {
             return constructor.create(context);
         }
 
-        protected final T getData(BlockGetter level, BlockPos pos) {
-            var entity = Objects.requireNonNull(level.getBlockEntity(pos));
+        protected final T getData(BlockGetter level, BlockPos pos, BlockState state) {
+            var entity = Objects.requireNonNull(Multipart.getBlockEntity(level, pos, state));
             return ((TKBlockEntity) entity).get(this);
         }
 

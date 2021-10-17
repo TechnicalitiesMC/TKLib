@@ -49,8 +49,8 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     // API
 
-    public ItemHolder at(BlockGetter level, BlockPos pos) {
-        return getData(level, pos).inventory;
+    public ItemHolder at(BlockGetter level, BlockPos pos, BlockState state) {
+        return getData(level, pos, state).inventory;
     }
 
     // Impl
@@ -58,7 +58,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         if (shouldDropItemsOnBreak && !state.is(newState.getBlock())) {
-            var data = getData(level, pos);
+            var data = getData(level, pos, state);
             Containers.dropContents(level, pos, data.inventory.asVanillaContainer());
             level.updateNeighbourForOutputSignal(pos, getBlock());
         }
@@ -66,7 +66,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     @Override
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
-        var data = getData(level, pos);
+        var data = getData(level, pos, state);
         return AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
     }
 

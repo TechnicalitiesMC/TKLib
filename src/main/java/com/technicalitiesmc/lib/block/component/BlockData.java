@@ -4,6 +4,7 @@ import com.technicalitiesmc.lib.block.BlockComponent;
 import com.technicalitiesmc.lib.block.BlockComponentData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockData<T extends BlockComponentData> extends BlockComponent.WithData<T> {
 
@@ -11,8 +12,8 @@ public class BlockData<T extends BlockComponentData> extends BlockComponent.With
         super(context, constructor);
     }
 
-    public T at(BlockGetter level, BlockPos pos) {
-        return getData(level, pos);
+    public T at(BlockGetter level, BlockPos pos, BlockState state) {
+        return getData(level, pos, state);
     }
 
 }
