@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 public abstract class BlockComponent {
 
@@ -56,21 +56,22 @@ public abstract class BlockComponent {
             return constructor.create(context);
         }
 
+        @Nullable
         protected final T getData(BlockGetter level, BlockPos pos, BlockState state) {
-            var entity = Objects.requireNonNull(Multipart.getBlockEntity(level, pos, state));
-            return ((TKBlockEntity) entity).get(this);
+            var entity = Multipart.getBlockEntity(level, pos, state);
+            return entity instanceof TKBlockEntity tkEntity ? tkEntity.get(this) : null;
         }
 
     }
 
     @FunctionalInterface
-    public static interface Constructor<T> {
+    public interface Constructor<T> {
 
         T create(Context context);
 
     }
 
-    public static interface Context {
+    public interface Context {
 
         TKBlock getBlock();
 
