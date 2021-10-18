@@ -16,15 +16,15 @@ import java.util.Optional;
 
 public class MergedShape extends CustomShape {
 
-    public static MergedShape of(IndexedShape... shapes) {
+    public static MergedShape of(VoxelShape... shapes) {
         return of(ImmutableList.copyOf(shapes));
     }
 
-    public static MergedShape of(List<IndexedShape> shapes) {
+    public static MergedShape of(List<VoxelShape> shapes) {
         return of(ImmutableList.copyOf(shapes));
     }
 
-    public static MergedShape of(ImmutableList<IndexedShape> shapes) {
+    public static MergedShape of(ImmutableList<VoxelShape> shapes) {
         var merged = shapes.stream()
                 .filter(Objects::nonNull)
                 .map(MergedShape::unwrap)
@@ -38,19 +38,22 @@ public class MergedShape extends CustomShape {
         return shape instanceof CustomShape ? ((CustomShape) shape).parent : shape;
     }
 
-    private final ImmutableList<IndexedShape> shapes;
+    private final ImmutableList<VoxelShape> shapes;
 
-    private MergedShape(ImmutableList<IndexedShape> shapes, VoxelShape merged) {
+    private MergedShape(ImmutableList<VoxelShape> shapes, VoxelShape merged) {
         super(merged);
         this.shapes = shapes;
     }
 
-    public ImmutableList<IndexedShape> getShapes() {
+    public ImmutableList<VoxelShape> getShapes() {
         return shapes;
     }
 
     public Optional<IndexedShape> find(int index) {
-        return shapes.stream().filter(s -> s.getIndex() == index).findFirst();
+        return shapes.stream()
+                .filter(s -> s instanceof IndexedShape is && is.getIndex() == index)
+                .map(s -> (IndexedShape) s)
+                .findFirst();
     }
 
     @Nullable
@@ -64,7 +67,7 @@ public class MergedShape extends CustomShape {
             if (hit == null || hit.getType() == HitResult.Type.MISS || (dist = hit.getLocation().distanceToSqr(start)) > closestDist) {
                 continue;
             }
-            closest = new IndexedBlockHitResult(hit, shape, shape.getIndex());
+            closest = new IndexedBlockHitResult(hit, shape, shape instanceof IndexedShape is ? is.getIndex() : -1);
             closestDist = dist;
         }
         return closest;
