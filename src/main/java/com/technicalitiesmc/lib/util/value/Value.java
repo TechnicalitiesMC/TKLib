@@ -1,4 +1,4 @@
-package com.technicalitiesmc.lib.util;
+package com.technicalitiesmc.lib.util.value;
 
 public final class Value<T> implements Reference<T> {
 

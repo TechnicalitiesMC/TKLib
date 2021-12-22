@@ -4,9 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -37,14 +40,48 @@ public final class TKBlockEntity extends BlockEntity {
         this.componentData = componentData.build();
     }
 
-    <T extends BlockComponentData> T get(BlockComponent.WithData<T> component) {
+    public <T extends BlockComponentData> T get(BlockComponent.WithData<T> component) {
         return (T) componentData.get(component);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        for (var data : componentData.values()) {
+            data.onLoad();
+        }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        for (var data : componentData.values()) {
+            data.onChunkUnloaded();
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        for (var data : componentData.values()) {
+            data.onRemoved();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        var builder = new ModelDataMap.Builder();
+        for (var data : componentData.values()) {
+            data.addModelData(builder);
+        }
+        return builder.build();
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        for (BlockComponentData data : componentData.values()) {
+        for (var data : componentData.values()) {
             var result = data.getCapability(cap, side);
             if (result.isPresent()) {
                 return result;
@@ -55,21 +92,20 @@ public final class TKBlockEntity extends BlockEntity {
 
     @Override
     public void invalidateCaps() {
-        for (BlockComponentData data : componentData.values()) {
+        for (var data : componentData.values()) {
             data.invalidateCaps();
         }
         super.invalidateCaps();
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        tag = super.save(tag);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         var componentsTag = new CompoundTag();
         namedData.forEach((name, data) -> {
             componentsTag.put(name, data.save(new CompoundTag()));
         });
         tag.put("components", componentsTag);
-        return tag;
     }
 
     @Override
@@ -79,6 +115,31 @@ public final class TKBlockEntity extends BlockEntity {
         namedData.forEach((name, data) -> {
             data.load(componentsTag.getCompound(name));
         });
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        var tag = super.getUpdateTag();
+        var componentsTag = new CompoundTag();
+        namedData.forEach((name, data) -> {
+            componentsTag.put(name, data.saveDescription(new CompoundTag()));
+        });
+        tag.put("components", componentsTag);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        var componentsTag = tag.getCompound("components");
+        namedData.forEach((name, data) -> {
+            data.loadDescription(componentsTag.getCompound(name));
+        });
+    }
+
+    @Nullable
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this, e -> e.getUpdateTag());
     }
 
     private class Context implements BlockComponentData.Context {
@@ -103,13 +164,18 @@ public final class TKBlockEntity extends BlockEntity {
             var level = getLevel();
             var pos = getBlockPos();
             if (level.hasChunkAt(pos)) {
-                level.getChunkAt(pos).markUnsaved();
+                level.getChunkAt(pos).setUnsaved(true);
             }
         }
 
         @Override
         public void updateComparators() {
             getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
+        }
+
+        @Override
+        public void markDataUpdated() {
+            TKBlockEntity.this.requestModelDataUpdate();
         }
 
     }

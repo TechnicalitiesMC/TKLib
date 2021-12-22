@@ -3,9 +3,9 @@ package com.technicalitiesmc.lib.init;
 import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.block.multipart.MultipartBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public final class TKLibBlocks {
 

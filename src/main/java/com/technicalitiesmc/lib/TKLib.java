@@ -1,9 +1,6 @@
 package com.technicalitiesmc.lib;
 
-import com.technicalitiesmc.lib.init.TKLibBlockSlots;
-import com.technicalitiesmc.lib.init.TKLibBlocks;
-import com.technicalitiesmc.lib.init.TKLibCapabilities;
-import com.technicalitiesmc.lib.init.TKLibMenus;
+import com.technicalitiesmc.lib.init.*;
 import com.technicalitiesmc.lib.network.TKLibNetworkHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -22,6 +19,7 @@ public class TKLib {
         TKLibBlockSlots.REGISTRY.register(bus);
         bus.addListener(TKLibCapabilities::onCapabilityRegistration);
         TKLibMenus.REGISTRY.register(bus);
+        TKLibCircuitComponents.REGISTRY.register(bus);
     }
 
     private void setup(final FMLCommonSetupEvent event) {

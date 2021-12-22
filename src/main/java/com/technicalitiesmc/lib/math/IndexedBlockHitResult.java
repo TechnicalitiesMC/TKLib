@@ -28,4 +28,8 @@ public class IndexedBlockHitResult extends BlockHitResult {
         return index;
     }
 
+    public boolean hasIndex() {
+        return index != Integer.MAX_VALUE;
+    }
+
 }

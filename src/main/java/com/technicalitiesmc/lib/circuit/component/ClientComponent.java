@@ -1,0 +1,30 @@
+package com.technicalitiesmc.lib.circuit.component;
+
+import com.mojang.math.Vector3f;
+import com.technicalitiesmc.lib.math.VecDirection;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+
+public class ClientComponent {
+
+    public static final ClientComponent DEFAULT = new ClientComponent();
+
+    public AABB getBoundingBox(ComponentState state) {
+        return CircuitComponent.FULL_BLOCK;
+    }
+
+    public InteractionResult use(ComponentState state, Player player, InteractionHand hand, VecDirection sideHit, Vector3f hit) {
+        return InteractionResult.PASS;
+    }
+
+    public boolean isTopSolid(ComponentState state) {
+        return false;
+    }
+
+    public int getTint(ComponentState state, int tintIndex) {
+        return 0xFFFFFFFF;
+    }
+
+}

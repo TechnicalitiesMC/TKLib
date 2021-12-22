@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -18,6 +19,19 @@ public abstract class BlockComponentData implements ICapabilityProvider {
 
     protected BlockComponentData(Context context) {
         this.context = context;
+    }
+
+    public void onLoad() {
+    }
+
+    public void onChunkUnloaded() {
+    }
+
+    public void onRemoved() {
+    }
+
+    public void addModelData(ModelDataMap.Builder builder) {
+
     }
 
     @Nonnull
@@ -34,6 +48,13 @@ public abstract class BlockComponentData implements ICapabilityProvider {
     }
 
     public void load(CompoundTag tag) {
+    }
+
+    public CompoundTag saveDescription(CompoundTag tag) {
+        return tag;
+    }
+
+    public void loadDescription(CompoundTag tag) {
     }
 
     protected final Level getLevel() {
@@ -55,6 +76,10 @@ public abstract class BlockComponentData implements ICapabilityProvider {
     protected final void updateComparators() {
         context.updateComparators();
     }
+    
+    protected final void markDataUpdated() {
+        context.markDataUpdated();
+    }
 
     @FunctionalInterface
     public interface Constructor<T extends BlockComponentData> {
@@ -74,6 +99,8 @@ public abstract class BlockComponentData implements ICapabilityProvider {
         void markUnsaved();
 
         void updateComparators();
+
+        void markDataUpdated();
 
     }
 

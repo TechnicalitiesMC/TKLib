@@ -4,10 +4,9 @@ import com.technicalitiesmc.lib.TKLib;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Function;
 
@@ -41,8 +40,8 @@ public class TKLibNetworkHandler {
         INSTANCE.sendToServer(packet);
     }
 
-    public static void sendServerboundGhostSlotClick(int slotNumber, ItemStack stack) {
-        sendToServer(new ServerboundGhostSlotClickPacket(slotNumber, stack));
+    public static void sendServerboundGhostSlotClick(int slotNumber) {
+        sendToServer(new ServerboundGhostSlotClickPacket(slotNumber));
     }
 
 }

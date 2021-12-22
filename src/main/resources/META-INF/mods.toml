@@ -20,6 +20,6 @@ Library mod for the Technicalities family of mods.
 [[dependencies.tklib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17.1,1.18)"
+    versionRange="[1.18.1,1.19)"
     ordering="NONE"
     side="BOTH"

@@ -67,7 +67,7 @@ public class MergedShape extends CustomShape {
             if (hit == null || hit.getType() == HitResult.Type.MISS || (dist = hit.getLocation().distanceToSqr(start)) > closestDist) {
                 continue;
             }
-            closest = new IndexedBlockHitResult(hit, shape, shape instanceof IndexedShape is ? is.getIndex() : -1);
+            closest = hit instanceof IndexedBlockHitResult ? hit : new IndexedBlockHitResult(hit, shape, shape instanceof IndexedShape is ? is.getIndex() : Integer.MAX_VALUE);
             closestDist = dist;
         }
         return closest;

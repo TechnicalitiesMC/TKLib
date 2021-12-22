@@ -3,8 +3,8 @@ package com.technicalitiesmc.lib.inventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
@@ -69,7 +69,7 @@ public class SimpleItemHolder implements SerializableItemHolder, INBTSerializabl
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        var slotList = tag.getList("slots", Constants.NBT.TAG_COMPOUND);
+        var slotList = tag.getList("slots", Tag.TAG_COMPOUND);
         for (int i = 0; i < items.size(); i++) {
             items.set(i, ItemStack.of(slotList.getCompound(i)));
         }

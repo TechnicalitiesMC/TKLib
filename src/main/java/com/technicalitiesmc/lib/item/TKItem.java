@@ -12,7 +12,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -27,8 +28,7 @@ import java.util.function.Function;
 
 public class TKItem extends Item {
 
-    @CapabilityInject(DataStore.class)
-    private static Capability<DataStore> DATA_STORE_CAPABILITY;
+    private static final Capability<DataStore> DATA_STORE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
     private final List<DataHandle<?>> dataClasses = new ArrayList<>();
     private final Map<Capability, Function<ItemStack, ? extends LazyOptional>> capabilitySuppliers = new HashMap<>();

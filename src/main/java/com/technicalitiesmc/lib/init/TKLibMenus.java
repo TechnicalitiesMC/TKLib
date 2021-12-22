@@ -4,9 +4,9 @@ import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.menu.LockedChestMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class TKLibMenus {
 

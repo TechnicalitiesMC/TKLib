@@ -46,7 +46,7 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             var carried = menu.getCarried();
             var placed = carried.copy().split(hoveredSlot.getMaxStackSize(carried));
             hoveredSlot.set(placed); // Temporarily update the client for continuity purposes
-            TKLibNetworkHandler.sendServerboundGhostSlotClick(hoveredSlot.index, placed);
+            TKLibNetworkHandler.sendServerboundGhostSlotClick(hoveredSlot.index);
             return true;
         }
 
