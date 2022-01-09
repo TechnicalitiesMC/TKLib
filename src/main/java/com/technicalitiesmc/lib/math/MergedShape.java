@@ -10,28 +10,45 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class MergedShape extends CustomShape {
 
-    public static MergedShape of(VoxelShape... shapes) {
-        return of(ImmutableList.copyOf(shapes));
-    }
-
-    public static MergedShape of(List<VoxelShape> shapes) {
-        return of(ImmutableList.copyOf(shapes));
-    }
-
-    public static MergedShape of(ImmutableList<VoxelShape> shapes) {
-        var merged = shapes.stream()
+    private static VoxelShape merge(Stream<VoxelShape> shapes) {
+        return shapes
                 .filter(Objects::nonNull)
                 .map(MergedShape::unwrap)
                 .reduce((a, b) -> Shapes.join(a, b, BooleanOp.OR))
                 .map(VoxelShape::optimize)
                 .orElse(Shapes.empty());
-        return new MergedShape(shapes, merged);
+    }
+
+    public static MergedShape ofMerged(VoxelShape... shapes) {
+        return of(merge(Arrays.stream(shapes)), shapes);
+    }
+
+    public static MergedShape of(VoxelShape baseShape, VoxelShape... shapes) {
+        return of(baseShape, ImmutableList.copyOf(shapes));
+    }
+
+    public static MergedShape ofMerged(List<VoxelShape> shapes) {
+        return of(merge(shapes.stream()), ImmutableList.copyOf(shapes));
+    }
+
+    public static MergedShape of(VoxelShape baseShape, List<VoxelShape> shapes) {
+        return of(baseShape, ImmutableList.copyOf(shapes));
+    }
+
+    public static MergedShape ofMerged(ImmutableList<VoxelShape> shapes) {
+        return of(merge(shapes.stream()), shapes);
+    }
+
+    public static MergedShape of(VoxelShape baseShape, ImmutableList<VoxelShape> shapes) {
+        return new MergedShape(shapes, baseShape);
     }
 
     private static VoxelShape unwrap(VoxelShape shape) {
