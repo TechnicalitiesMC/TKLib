@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public interface PlacementContext {
 
@@ -41,9 +42,21 @@ public interface PlacementContext {
 
         boolean tryPut(Vec3i pos, ComponentType type, ComponentType.Factory factory);
 
+        boolean tryPutAll(Consumer<MultiPlacementContext> function);
+
         void consumeItems(int count);
 
         void playSound();
+
+    }
+
+    interface MultiPlacementContext {
+
+        default void at(Vec3i pos, ComponentType type) {
+            at(pos, type, type::create);
+        }
+
+        void at(Vec3i pos, ComponentType type, ComponentType.Factory factory);
 
     }
 
