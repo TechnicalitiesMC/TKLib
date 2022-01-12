@@ -5,15 +5,27 @@ import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
-public class ClientComponent {
+import java.util.function.Supplier;
 
-    public static final ClientComponent DEFAULT = new ClientComponent();
+public abstract class ClientComponent {
+
+    public static ClientComponent base(Supplier<ItemStack> itemSupplier){
+        return new ClientComponent() {
+            @Override
+            public ItemStack getPickedItem(ComponentState state) {
+                return itemSupplier.get();
+            }
+        };
+    }
 
     public AABB getBoundingBox(ComponentState state) {
         return CircuitComponent.FULL_BLOCK;
     }
+
+    public abstract ItemStack getPickedItem(ComponentState state);
 
     public InteractionResult use(ComponentState state, Player player, InteractionHand hand, VecDirection sideHit, Vector3f hit) {
         return InteractionResult.PASS;

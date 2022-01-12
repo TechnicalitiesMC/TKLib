@@ -44,6 +44,8 @@ public abstract class CircuitComponent {
         return FULL_BLOCK;
     }
 
+    public abstract ItemStack getPickedItem();
+
     public List<ItemStack> getDrops(ServerLevel level, boolean isCreative) {
         if (isCreative) {
             return Collections.emptyList();

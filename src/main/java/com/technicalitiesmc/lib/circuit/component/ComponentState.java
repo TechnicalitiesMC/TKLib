@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
@@ -59,6 +60,10 @@ public class ComponentState extends StateHolder<ComponentType, ComponentState> {
 
     public AABB getBoundingBox() {
         return owner.getClientComponent().getBoundingBox(this);
+    }
+
+    public ItemStack getPickedItem() {
+        return owner.getClientComponent().getPickedItem(this);
     }
 
     public InteractionResult use(Player player, InteractionHand hand, VecDirection sideHit, Vector3f hit) {
