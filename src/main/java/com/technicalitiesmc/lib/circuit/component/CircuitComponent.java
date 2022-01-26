@@ -3,7 +3,6 @@ package com.technicalitiesmc.lib.circuit.component;
 import com.mojang.math.Vector3f;
 import com.technicalitiesmc.lib.math.VecDirection;
 import com.technicalitiesmc.lib.math.VecDirectionFlags;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -135,7 +134,7 @@ public abstract class CircuitComponent {
     }
 
     protected final void sendEventAt(Vec3i offset, CircuitEvent event, boolean adjacentOnly, VecDirectionFlags directions) {
-        context.sendEventAt(offset, getType().getSlot(), event, adjacentOnly, directions);
+        context.sendEventAt(offset, getType().getSlot(), event, directions);
     }
 
     protected final void removeComponentAt(Vec3i offset, ComponentSlot slot, boolean notifyNeighbors) {
@@ -171,34 +170,6 @@ public abstract class CircuitComponent {
     @Nullable
     protected final CircuitComponent getNeighbor(VecDirection direction, ComponentSlot slot) {
         return getComponentAt(direction.getOffset(), slot);
-    }
-
-    @Nullable
-    protected final CircuitComponent getNeighbor(VecDirection direction, boolean adjacentOnly) {
-        if (direction.getAxis() != Direction.Axis.Y) {
-            return getNeighbor(direction, ComponentSlot.DEFAULT);
-        }
-
-        var dir = direction.getAxisDirection();
-        var slot = this.type.getSlot();
-        var pos = Vec3i.ZERO;
-        do {
-            pos = pos.offset(slot.getOffsetTowards(dir));
-            var next = slot.next(dir);
-            var component = getComponentAt(pos, next);
-            if (component != null) {
-                return component;
-            }
-            slot = next;
-        } while (!adjacentOnly && slot != ComponentSlot.DEFAULT);
-
-        return null;
-    }
-
-    @Nullable
-    protected final <T> T getNeighborInterface(VecDirection direction, Class<T> type, boolean adjacentOnly) {
-        var neighbor = getNeighbor(direction, adjacentOnly);
-        return neighbor != null ? neighbor.getInterface(direction.getOpposite(), type) : null;
     }
 
 }

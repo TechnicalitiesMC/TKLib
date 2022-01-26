@@ -17,7 +17,7 @@ public interface ComponentContext {
 
     void scheduleRemoval();
 
-    void sendEventAt(Vec3i offset, ComponentSlot slot, CircuitEvent event, boolean adjacentOnly, VecDirectionFlags directions);
+    void sendEventAt(Vec3i offset, ComponentSlot slot, CircuitEvent event, VecDirectionFlags directions);
 
     void updateExternalState(boolean reRender, Runnable action);
 
