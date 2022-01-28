@@ -1,5 +1,8 @@
 package com.technicalitiesmc.lib.circuit.placement;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import com.technicalitiesmc.lib.circuit.component.ComponentState;
 import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,6 +24,10 @@ public interface ComponentPlacement {
         void serialize(FriendlyByteBuf buf);
 
         void place(PlacementContext.Server context);
+
+        default Multimap<Vec3i, ComponentState> getPreviewStates() {
+            return ImmutableMultimap.of();
+        }
 
     }
 

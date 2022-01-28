@@ -31,6 +31,10 @@ public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirection
         return new VecDirectionFlags(makeMask(directions));
     }
 
+    public static VecDirectionFlags deserialize(byte value) {
+        return new VecDirectionFlags(value);
+    }
+
     private VecDirectionFlags(byte value) {
         super(value);
     }

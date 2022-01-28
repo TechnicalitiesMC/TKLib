@@ -9,7 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public interface PlacementContext {
 
@@ -32,6 +32,8 @@ public interface PlacementContext {
 
         boolean isWithinBounds(Vec3i pos);
 
+        boolean isModifierPressed();
+
     }
 
     interface Server {
@@ -42,7 +44,7 @@ public interface PlacementContext {
 
         boolean tryPut(Vec3i pos, ComponentType type, ComponentType.Factory factory);
 
-        boolean tryPutAll(Consumer<MultiPlacementContext> function);
+        boolean tryPutAll(Predicate<MultiPlacementContext> function);
 
         void consumeItems(int count);
 
@@ -52,11 +54,11 @@ public interface PlacementContext {
 
     interface MultiPlacementContext {
 
-        default void at(Vec3i pos, ComponentType type) {
-            at(pos, type, type::create);
+        default boolean at(Vec3i pos, ComponentType type) {
+            return at(pos, type, type::create);
         }
 
-        void at(Vec3i pos, ComponentType type, ComponentType.Factory factory);
+        boolean at(Vec3i pos, ComponentType type, ComponentType.Factory factory);
 
     }
 

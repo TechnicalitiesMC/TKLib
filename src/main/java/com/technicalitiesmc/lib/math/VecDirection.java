@@ -44,6 +44,11 @@ public enum VecDirection {
         };
     }
 
+    public static VecDirection getNearest(Vec3i vec) {
+        var direction = Direction.getNearest(vec.getX(), vec.getY(), vec.getZ());
+        return fromAxisAndDirection(direction.getAxis(), direction.getAxisDirection());
+    }
+
     public VecDirection getOpposite() {
         return VALUES[ordinal() ^ 1];
     }
