@@ -6,6 +6,4 @@ public interface RedstoneSink {
         return RedstoneSinkImpl.INSTANCE;
     }
 
-//    boolean shouldWiresExtendToCenter();
-
 }
