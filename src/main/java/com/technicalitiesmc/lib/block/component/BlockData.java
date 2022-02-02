@@ -6,12 +6,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+
 public class BlockData<T extends BlockComponentData> extends BlockComponent.WithData<T> {
 
     public BlockData(Context context, BlockComponentData.Constructor<T> constructor) {
         super(context, constructor);
     }
 
+    @Nullable
     public T at(BlockGetter level, BlockPos pos, BlockState state) {
         return getData(level, pos, state);
     }
