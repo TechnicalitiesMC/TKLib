@@ -4,7 +4,7 @@ import net.minecraft.world.item.DyeColor;
 
 import javax.annotation.Nullable;
 
-public interface RedstoneWire extends Wire {
+public interface RedstoneWire {
 
     @Nullable
     DyeColor getColor();
