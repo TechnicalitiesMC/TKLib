@@ -3,6 +3,7 @@ package com.technicalitiesmc.lib.math;
 import com.technicalitiesmc.lib.util.AbstractFlags8;
 
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirectionFlags> implements Iterable<VecDirection> {
 
@@ -46,7 +47,12 @@ public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirection
 
     @Override
     public Iterator<VecDirection> iterator() {
-        return asIterable(VecDirection.class).iterator();
+        return stream(VecDirection.class).iterator();
+    }
+
+    @Override
+    public String toString() {
+        return "[" + stream(VecDirection.class).map(VecDirection::name).collect(Collectors.joining(", ")) + "]";
     }
 
 }

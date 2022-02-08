@@ -31,7 +31,7 @@ public class CircuitEventFlags extends AbstractFlags8<CircuitEvent, CircuitEvent
 
     @Override
     public Iterator<CircuitEvent> iterator() {
-        return asIterable(CircuitEvent.class).iterator();
+        return stream(CircuitEvent.class).iterator();
     }
 
 }

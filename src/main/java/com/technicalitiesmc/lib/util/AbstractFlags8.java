@@ -1,6 +1,7 @@
 package com.technicalitiesmc.lib.util;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8<T, F>> {
 
@@ -90,10 +91,9 @@ public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8
         return create((byte) (value & values.getValue()));
     }
 
-    public Iterable<T> asIterable(Class<T> clazz) {
-        return () -> Arrays.stream(clazz.getEnumConstants())
-                .filter(this::has)
-                .iterator();
+    public Stream<T> stream(Class<T> clazz) {
+        return Arrays.stream(clazz.getEnumConstants())
+                .filter(this::has);
     }
 
     public byte serialize() {
