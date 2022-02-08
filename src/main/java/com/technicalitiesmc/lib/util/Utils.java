@@ -9,6 +9,9 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
@@ -19,6 +22,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class Utils {
+
+    private static final Capability<DyeHolder> DYE_HOLDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
     /**
      * Sets the bit at the specified position to the given state.
@@ -105,6 +111,10 @@ public class Utils {
 
     @Nullable
     public static DyeColor getDyeColor(ItemStack stack) {
+        var cap = stack.getCapability(DYE_HOLDER_CAPABILITY);
+        if (cap.isPresent()) {
+            return cap.orElse(null).getColor();
+        }
         if (stack.is(Tags.Items.DYES)) {
             for (var color : DyeColor.values()) {
                 if (stack.is(color.getTag())) {
