@@ -2,8 +2,8 @@ package com.technicalitiesmc.lib.circuit.interfaces.wire;
 
 import net.minecraft.world.item.DyeColor;
 
-public interface BundledWire {
+public interface BundledWire extends Wire {
 
-    RedstoneWire get(DyeColor color);
+    RedstoneConductor getConductor(DyeColor color);
 
 }
