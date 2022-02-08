@@ -38,6 +38,8 @@ public interface PlacementContext {
 
     interface Server {
 
+        Player getPlayer();
+
         default boolean tryPut(Vec3i pos, ComponentType type) {
             return tryPut(pos, type, type::create);
         }
