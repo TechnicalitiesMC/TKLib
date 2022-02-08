@@ -33,7 +33,10 @@ public abstract class CircuitComponent {
         this.context = context;
     }
 
-    public abstract CircuitComponent copyRotated(ComponentContext context, Rotation rotation);
+    @Deprecated
+    public CircuitComponent copyRotated(ComponentContext context, Rotation rotation) {
+        return null;
+    }
 
     public ComponentState getState() {
         return type.getDefaultState();
@@ -125,15 +128,15 @@ public abstract class CircuitComponent {
         context.scheduleTick(delay);
     }
 
-    protected final void sendEvent(CircuitEvent event, boolean adjacentOnly, VecDirection... directions) {
-        sendEvent(event, adjacentOnly, VecDirectionFlags.of(directions));
+    protected final void sendEvent(CircuitEvent event, VecDirection... directions) {
+        sendEvent(event, VecDirectionFlags.of(directions));
     }
 
-    protected final void sendEvent(CircuitEvent event, boolean adjacentOnly, VecDirectionFlags directions) {
-        sendEventAt(Vec3i.ZERO, event, adjacentOnly, directions);
+    protected final void sendEvent(CircuitEvent event, VecDirectionFlags directions) {
+        sendEventAt(Vec3i.ZERO, event, directions);
     }
 
-    protected final void sendEventAt(Vec3i offset, CircuitEvent event, boolean adjacentOnly, VecDirectionFlags directions) {
+    protected final void sendEventAt(Vec3i offset, CircuitEvent event, VecDirectionFlags directions) {
         context.sendEventAt(offset, getType().getSlot(), event, directions);
     }
 
