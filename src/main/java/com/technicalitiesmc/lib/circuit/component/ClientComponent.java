@@ -27,6 +27,9 @@ public abstract class ClientComponent {
 
     public abstract ItemStack getPickedItem(ComponentState state);
 
+    public void onPicking(ComponentState state, Player player) {
+    }
+
     public InteractionResult use(ComponentState state, Player player, InteractionHand hand, VecDirection sideHit, Vector3f hit) {
         return InteractionResult.PASS;
     }

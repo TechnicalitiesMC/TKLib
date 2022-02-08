@@ -66,6 +66,10 @@ public class ComponentState extends StateHolder<ComponentType, ComponentState> {
         return owner.getClientComponent().getPickedItem(this);
     }
 
+    public void onPicking(Player player) {
+        owner.getClientComponent().onPicking(this, player);
+    }
+
     public InteractionResult use(Player player, InteractionHand hand, VecDirection sideHit, Vector3f hit) {
         return owner.getClientComponent().use(this, player, hand, sideHit, hit);
     }
