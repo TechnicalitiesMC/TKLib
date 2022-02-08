@@ -2,12 +2,16 @@ package com.technicalitiesmc.lib.util;
 
 import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.Tags;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -97,6 +101,18 @@ public class Utils {
      */
     public static <T> Set<T> newIdentityHashSet() {
         return Collections.newSetFromMap(new IdentityHashMap<>());
+    }
+
+    @Nullable
+    public static DyeColor getDyeColor(ItemStack stack) {
+        if (stack.is(Tags.Items.DYES)) {
+            for (var color : DyeColor.values()) {
+                if (stack.is(color.getTag())) {
+                    return color;
+                }
+            }
+        }
+        return null;
     }
 
 }
