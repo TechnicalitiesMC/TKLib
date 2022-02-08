@@ -8,7 +8,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -115,14 +114,7 @@ public class Utils {
         if (cap.isPresent()) {
             return cap.orElse(null).getColor();
         }
-        if (stack.is(Tags.Items.DYES)) {
-            for (var color : DyeColor.values()) {
-                if (stack.is(color.getTag())) {
-                    return color;
-                }
-            }
-        }
-        return null;
+        return DyeColor.getColor(stack);
     }
 
 }
