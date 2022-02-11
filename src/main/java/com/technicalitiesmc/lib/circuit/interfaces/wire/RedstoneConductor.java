@@ -98,11 +98,16 @@ public abstract class RedstoneConductor {
             var queue = new ArrayDeque<RedstoneConductor>();
             var network = new Network(conductors);
             queue.add(origin);
+            Visitor visitor = (conductor) -> {
+                if (conductor != null) {
+                    queue.add(conductor);
+                }
+            };
             while (!queue.isEmpty()) {
                 var conductor = queue.pop();
                 if (conductors.add(conductor)) {
                     conductor.network = network;
-                    conductor.visit(queue::add);
+                    conductor.visit(visitor);
                 }
             }
         }
