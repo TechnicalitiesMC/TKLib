@@ -7,6 +7,7 @@ import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -16,6 +17,10 @@ public interface PlacementContext {
     Player getPlayer();
 
     InteractionHand getHand();
+
+    default ItemStack getStack() {
+        return getPlayer().getItemInHand(getHand());
+    }
 
     VecDirection getFacing();
 
