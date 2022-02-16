@@ -2,27 +2,37 @@ package com.technicalitiesmc.lib.math;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.Rotation;
 
-public enum VecDirection {
-    NEG_X(Direction.Axis.X, Direction.AxisDirection.NEGATIVE, 2),
-    POS_X(Direction.Axis.X, Direction.AxisDirection.POSITIVE, 0),
-    NEG_Y(Direction.Axis.Y, Direction.AxisDirection.NEGATIVE, -1),
-    POS_Y(Direction.Axis.Y, Direction.AxisDirection.POSITIVE, -1),
-    NEG_Z(Direction.Axis.Z, Direction.AxisDirection.NEGATIVE, 3),
-    POS_Z(Direction.Axis.Z, Direction.AxisDirection.POSITIVE, 1);
+public enum VecDirection implements StringRepresentable {
+    NEG_X("neg_x", Direction.Axis.X, Direction.AxisDirection.NEGATIVE, 2),
+    POS_X("pos_x", Direction.Axis.X, Direction.AxisDirection.POSITIVE, 0),
+    NEG_Y("neg_y", Direction.Axis.Y, Direction.AxisDirection.NEGATIVE, -1),
+    POS_Y("pos_y", Direction.Axis.Y, Direction.AxisDirection.POSITIVE, -1),
+    NEG_Z("neg_z", Direction.Axis.Z, Direction.AxisDirection.NEGATIVE, 3),
+    POS_Z("pos_z", Direction.Axis.Z, Direction.AxisDirection.POSITIVE, 1);
 
     public static final VecDirection[] VALUES = values();
+    private static final VecDirection[] HORIZONTALS = { POS_X, POS_Z, NEG_X, NEG_Z };
 
+    private final String name;
     private final Direction.Axis axis;
     private final Direction.AxisDirection axisDirection;
     private final int horizontalIndex;
     private final Vec3i offset;
 
-    VecDirection(Direction.Axis axis, Direction.AxisDirection axisDirection, int horizontalIndex) {
+    VecDirection(String name, Direction.Axis axis, Direction.AxisDirection axisDirection, int horizontalIndex) {
+        this.name = name;
         this.axis = axis;
         this.axisDirection = axisDirection;
         this.horizontalIndex = horizontalIndex;
         this.offset = Direction.fromAxisAndDirection(axis, axisDirection).getNormal();
+    }
+
+    @Override
+    public String getSerializedName() {
+        return name;
     }
 
     public static VecDirection fromDirection(Direction direction) {
@@ -73,4 +83,7 @@ public enum VecDirection {
         return axisDirection == Direction.AxisDirection.POSITIVE;
     }
 
+    public VecDirection applyY(Rotation rotation) {
+        return HORIZONTALS[(getHorizontalIndex() + rotation.ordinal()) % HORIZONTALS.length];
+    }
 }
