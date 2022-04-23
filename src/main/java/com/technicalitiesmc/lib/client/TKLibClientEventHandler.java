@@ -1,12 +1,12 @@
 package com.technicalitiesmc.lib.client;
 
 import com.technicalitiesmc.lib.TKLib;
-import com.technicalitiesmc.lib.math.IndexedBlockHitResult;
+import com.technicalitiesmc.lib.block.CustomBlockHighlight;
+import com.technicalitiesmc.lib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -18,25 +18,30 @@ public class TKLibClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onDrawBlockHighlight(DrawSelectionEvent.HighlightBlock event) {
+        var mc = Minecraft.getInstance();
         var target = event.getTarget();
-        VoxelShape shape = null;
-        while (target instanceof IndexedBlockHitResult hit) {
-            target = hit.getParent();
-            shape = hit.getShape();
+
+        var state = Utils.resolveHit(mc.level, target);
+        if (!(state.getBlock() instanceof CustomBlockHighlight cbh)) {
+            return;
         }
+
+        var shape = cbh.getCustomHighlightShape(mc.level, target, mc.player);
         if (shape == null) {
             return;
         }
 
-        var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        var offset = Vec3.atLowerCornerOf(target.getBlockPos()).subtract(cameraPos);
-        LevelRenderer.renderShape(
-                event.getPoseStack(),
-                event.getMultiBufferSource().getBuffer(RenderType.lines()),
-                shape,
-                offset.x, offset.y, offset.z,
-                0, 0, 0, 0.4f
-        );
+        if (!shape.isEmpty()) {
+            var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+            var offset = Vec3.atLowerCornerOf(target.getBlockPos()).subtract(cameraPos);
+            LevelRenderer.renderShape(
+                    event.getPoseStack(),
+                    event.getMultiBufferSource().getBuffer(RenderType.lines()),
+                    shape,
+                    offset.x, offset.y, offset.z,
+                    0, 0, 0, 0.4f
+            );
+        }
 
         event.setCanceled(true);
     }
