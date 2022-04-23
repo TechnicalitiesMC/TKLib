@@ -7,6 +7,10 @@ import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 public interface ComponentPlacement {
 
@@ -15,6 +19,11 @@ public interface ComponentPlacement {
     Instance deserialize(FriendlyByteBuf buf);
 
     interface Instance {
+
+        @Nullable
+        default VoxelShape createOverrideShape(PlacementContext.Client context, Vec3i clickedPos, VecDirection clickedFace, HitResult hit) {
+            return null;
+        }
 
         boolean tick(PlacementContext.Client context, Vec3i clickedPos, VecDirection clickedFace);
 

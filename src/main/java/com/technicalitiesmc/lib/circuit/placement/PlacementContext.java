@@ -7,6 +7,7 @@ import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -14,19 +15,19 @@ import java.util.function.Predicate;
 
 public interface PlacementContext {
 
-    Player getPlayer();
+    interface Client {
 
-    InteractionHand getHand();
+        Player getPlayer();
 
-    default ItemStack getStack() {
-        return getPlayer().getItemInHand(getHand());
-    }
+        InteractionHand getHand();
 
-    VecDirection getFacing();
+        default ItemStack getStack() {
+            return getPlayer().getItemInHand(getHand());
+        }
 
-    VecDirection getHorizontalFacing();
+        VecDirection getFacing();
 
-    interface Client extends PlacementContext {
+        VecDirection getHorizontalFacing();
 
         @Nullable
         ComponentState get(Vec3i pos, ComponentSlot slot);
@@ -54,6 +55,8 @@ public interface PlacementContext {
         boolean tryPutAll(Predicate<MultiPlacementContext> function);
 
         void consumeItems(int count);
+
+        void consumeItems(Item item, int count);
 
         void playSound();
 
