@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class LockedChestMenu extends ChestMenu {
 
-
     public static LockedChestMenu threeRows(int id, Inventory playerInv) {
         return threeRows(id, playerInv, new SimpleContainer(9 * 3));
     }

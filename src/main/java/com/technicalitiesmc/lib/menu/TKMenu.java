@@ -1,21 +1,27 @@
 package com.technicalitiesmc.lib.menu;
 
-import com.technicalitiesmc.lib.inventory.ItemHolder;
+import com.technicalitiesmc.lib.container.item.ItemContainer;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class TKMenu extends AbstractContainerMenu {
 
     private final List<Region> regions = new ArrayList<>();
+    private final Int2ObjectMap<Region> slotRegions = new Int2ObjectOpenHashMap<>();
 
     protected final Inventory playerInv;
 
@@ -28,6 +34,28 @@ public abstract class TKMenu extends AbstractContainerMenu {
         var region = new Region();
         regions.add(region);
         return region;
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player player, int slot) {
+        var region = slotRegions.get(slot);
+        var s = slots.get(slot);
+        if (region == null || !s.hasItem() || !s.mayPickup(player)) {
+            return ItemStack.EMPTY;
+        }
+        var stack = s.getItem().copy();
+
+        for (var handle : region.shiftTargets) {
+            for (var target : handle.getSlots()) {
+                if (moveItemStackTo(stack, target.index, target.index + 1, false) && stack.isEmpty()) {
+                    s.set(stack);
+                    return ItemStack.EMPTY;
+                }
+            }
+        }
+        s.set(stack);
+
+        return ItemStack.EMPTY;
     }
 
     public final class Region implements RegionHandle {
@@ -46,19 +74,19 @@ public abstract class TKMenu extends AbstractContainerMenu {
             return addSlots(x, y, rows, columns, (x1, y1, id) -> new Slot(container, id + start, x1, y1));
         }
 
-        public TKSlot addSlot(int x, int y, ItemHolder inventory, int slot) {
+        public TKSlot addSlot(int x, int y, ItemContainer inventory, int slot) {
             return addSlots(x, y, 1, 1, inventory, slot).iterator().next();
         }
 
-        public Iterable<TKSlot> addSlots(int x, int y, int rows, int columns, ItemHolder inventory, int start) {
+        public Iterable<TKSlot> addSlots(int x, int y, int rows, int columns, ItemContainer inventory, int start) {
             return addSlots(x, y, rows, columns, (x1, y1, id) -> new TKSlot(x1, y1, inventory, id + start));
         }
 
-        public TKGhostSlot addGhostSlot(int x, int y, ItemHolder inventory, int slot, int limit) {
+        public TKGhostSlot addGhostSlot(int x, int y, ItemContainer inventory, int slot, int limit) {
             return addGhostSlots(x, y, 1, 1, inventory, slot, limit).iterator().next();
         }
 
-        public Iterable<TKGhostSlot> addGhostSlots(int x, int y, int rows, int columns, ItemHolder inventory, int start, int limit) {
+        public Iterable<TKGhostSlot> addGhostSlots(int x, int y, int rows, int columns, ItemContainer inventory, int start, int limit) {
             return addSlots(x, y, rows, columns, (x1, y1, id) -> new TKGhostSlot(x1, y1, inventory, id + start, limit));
         }
 
@@ -74,6 +102,7 @@ public abstract class TKMenu extends AbstractContainerMenu {
 
         public <T extends Slot> T addSlot(T slot) {
             slots.add(slot);
+            slotRegions.put(TKMenu.this.slots.size(), this);
             TKMenu.this.addSlot(slot);
             return slot;
         }
@@ -81,6 +110,25 @@ public abstract class TKMenu extends AbstractContainerMenu {
         public void addPlayerSlots(int x, int y, Inventory playerInv) {
             addSlots(x, y, 3, 9, playerInv, 9);
             addSlots(x, y + 58, 1, 9, playerInv, 0);
+        }
+
+        public void addPlayerSlots(int x, int y, Inventory playerInv, boolean lockSelected) {
+            if (lockSelected) {
+                addSlots(x, y, 3, 9, playerInv, 9);
+                addSlots(x, y + 58, 1, 9, (x1, y1, id) -> new Slot(playerInv, id, x1, y1) {
+                    @Override
+                    public boolean mayPickup(Player player) {
+                        return getSlotIndex() != ((Inventory) container).selected;
+                    }
+
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return getSlotIndex() != ((Inventory) container).selected;
+                    }
+                });
+            } else {
+                addPlayerSlots(x, y, playerInv);
+            }
         }
 
         public void onChanged(Consumer<TKSlot> callback) {
@@ -95,24 +143,34 @@ public abstract class TKMenu extends AbstractContainerMenu {
             shiftTargets.addAll(Arrays.asList(regions));
         }
 
+        @Override
+        public List<Slot> getSlots() {
+            return slots;
+        }
+
         public Reversed reversed() {
             return new Reversed();
         }
 
-        public class Reversed implements RegionHandle {
+        public final class Reversed implements RegionHandle {
 
             private Reversed() {
             }
 
-            private Region getRegion() {
-                return Region.this;
+            @Override
+            public List<Slot> getSlots() {
+                var list = new ArrayList<>(Region.this.slots);
+                Collections.reverse(list);
+                return list;
             }
 
         }
 
     }
 
-    public interface RegionHandle {
+    public sealed interface RegionHandle {
+
+        List<Slot> getSlots();
 
     }
 
