@@ -1,6 +1,7 @@
 package com.technicalitiesmc.lib.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
@@ -8,7 +9,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -73,8 +76,34 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
     // Implementation
 
     @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        var state = super.getStateForPlacement(context);
+        for (var component : getComponents()) {
+            state = component.getStateForPlacement(context, state);
+        }
+        return state;
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction side, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        state = super.updateShape(state, side, neighborState, level, pos, neighborPos);
+        for (var component : getComponents()) {
+            state = component.updateShape(state, side, neighborState, level, pos, neighborPos);
+        }
+        return state;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos neighborPos, boolean moving) {
+        super.neighborChanged(state, level, pos, block, neighborPos, moving);
+        for (var component : getComponents()) {
+            component.neighborChanged(state, level, pos, block, neighborPos, moving);
+        }
+    }
+
+    @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        for (BlockComponent component : getComponents()) {
+        for (var component : getComponents()) {
             var result = component.use(state, level, pos, player, hand, hit);
             if (result != InteractionResult.PASS)
                 return result;
@@ -84,7 +113,7 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
-        for (BlockComponent component : getComponents()) {
+        for (var component : getComponents()) {
             component.onRemove(state, level, pos, newState, moving);
         }
         super.onRemove(state, level, pos, newState, moving);
@@ -93,7 +122,7 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
     @Override
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         var signal = 0;
-        for (BlockComponent component : getComponents()) {
+        for (var component : getComponents()) {
             signal = Math.max(signal, component.getAnalogOutputSignal(state, level, pos));
         }
         return signal;

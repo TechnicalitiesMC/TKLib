@@ -2,9 +2,8 @@ package com.technicalitiesmc.lib.block.component;
 
 import com.technicalitiesmc.lib.block.BlockComponent;
 import com.technicalitiesmc.lib.block.BlockComponentData;
-import com.technicalitiesmc.lib.inventory.ItemHolder;
-import com.technicalitiesmc.lib.inventory.SerializableItemHolder;
-import com.technicalitiesmc.lib.inventory.SimpleItemHolder;
+import com.technicalitiesmc.lib.container.item.ItemContainer;
+import com.technicalitiesmc.lib.container.item.SimpleItemContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -28,38 +27,53 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     private static final Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
-    private final boolean shouldDropItemsOnBreak;
+    private static final UpdateCallback EMPTY_CALLBACK = ($, $$, $$$, $$$$) -> {};
 
-    public BlockInventory(Context context, int slots, Flag... flags) {
-        this(context, slots, flags.length != 0 ? EnumSet.copyOf(Arrays.asList(flags)) : EnumSet.noneOf(Flag.class));
-    }
+    private final InventoryFactory inventoryFactory;
+    private final boolean shouldDropItemsOnBreak, shouldUpdateComparators, shouldExposeCaps;
+    private final UpdateCallback updateCallback;
 
-    public BlockInventory(Context context, int slots, EnumSet<Flag> flags) {
-        this(context, callback -> new SimpleItemHolder(slots, callback), flags);
-    }
-
-    public BlockInventory(Context context, InventoryFactory inventoryFactory, Flag... flags) {
-        this(context, inventoryFactory, EnumSet.copyOf(Arrays.asList(flags)));
-    }
-
-    public BlockInventory(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
-        super(context, ctx -> new Data(ctx, inventoryFactory, flags));
+    private BlockInventory(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags, @Nullable UpdateCallback updateCallback) {
+        super(context, Data::new);
+        this.inventoryFactory = inventoryFactory;
         this.shouldDropItemsOnBreak = flags.contains(Flag.DROP_ON_BREAK);
+        this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
+        this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);
+        this.updateCallback = updateCallback != null ? updateCallback : EMPTY_CALLBACK;
+    }
+
+    // Static construction
+
+    public static BlockComponent.Constructor<BlockInventory> of(int slots, @Nullable UpdateCallback updateCallback, Flag... flags) {
+        return of(callback -> new SimpleItemContainer(slots, callback), updateCallback, flags);
+    }
+
+    public static BlockComponent.Constructor<BlockInventory> of(InventoryFactory inventoryFactory, @Nullable UpdateCallback updateCallback, Flag... flags) {
+        return context -> new BlockInventory(
+                context,
+                inventoryFactory,
+                flags.length != 0 ? EnumSet.copyOf(Arrays.asList(flags)) : EnumSet.noneOf(Flag.class),
+                updateCallback
+        );
     }
 
     // API
 
-    public ItemHolder at(BlockGetter level, BlockPos pos, BlockState state) {
-        return getData(level, pos, state).inventory;
+    @Nullable
+    public ItemContainer at(BlockGetter level, BlockPos pos, BlockState state) {
+        var data = getData(level, pos, state);
+        return data == null ? null : data.inventory;
     }
 
     // Impl
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
-        if (shouldDropItemsOnBreak && !state.is(newState.getBlock())) {
+        if (!moving && shouldDropItemsOnBreak && !state.is(newState.getBlock())) {
             var data = getData(level, pos, state);
-            Containers.dropContents(level, pos, data.inventory.asVanillaContainer());
+            if (data != null) {
+                Containers.dropContents(level, pos, data.inventory.asVanillaContainer());
+            }
             level.updateNeighbourForOutputSignal(pos, getBlock());
         }
     }
@@ -67,28 +81,27 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     @Override
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         var data = getData(level, pos, state);
-        return AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
+        return data == null ? 0 : AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
     }
 
-    public static class Data extends BlockComponentData {
+    public static class Data extends BlockComponentData<BlockInventory> {
 
-        private final boolean shouldUpdateComparators, shouldExposeCaps;
 
-        private final SerializableItemHolder inventory;
+        private final ItemContainer.Serializable inventory;
         private final LazyOptional<IItemHandler> itemHandler;
 
-        private Data(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags) {
+        private Data(Context context) {
             super(context);
-            this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
-            this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);
-
-            this.inventory = inventoryFactory.createInventory(this::onInventoryUpdate);
-            this.itemHandler = shouldExposeCaps ? LazyOptional.of(inventory::asItemHandler) : LazyOptional.empty();
+            var component = getComponent();
+            this.inventory = component.inventoryFactory.createInventory(this::onInventoryUpdate);
+            this.itemHandler = component.shouldExposeCaps ? LazyOptional.of(inventory::asItemHandler) : LazyOptional.empty();
         }
 
         private void onInventoryUpdate() {
+            var component = getComponent();
+            component.updateCallback.onUpdated(getLevel(), getBlockPos(), getBlockState(), inventory);
             markUnsaved();
-            if (shouldUpdateComparators) {
+            if (component.shouldUpdateComparators) {
                 updateComparators();
             }
         }
@@ -96,7 +109,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (shouldExposeCaps && cap == ITEM_HANDLER_CAPABILITY) {
+            if (cap == ITEM_HANDLER_CAPABILITY) {
                 return itemHandler.cast();
             }
             return super.getCapability(cap, side);
@@ -109,13 +122,13 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
         @Override
         public CompoundTag save(CompoundTag tag) {
-            tag.put("inventory", inventory.serializeNBT());
+            tag.put("inventory", inventory.save());
             return tag;
         }
 
         @Override
         public void load(CompoundTag tag) {
-            inventory.deserializeNBT(tag.getCompound("inventory"));
+            inventory.load(tag.getCompound("inventory"));
         }
 
     }
@@ -129,7 +142,14 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     @FunctionalInterface
     public interface InventoryFactory {
 
-        SerializableItemHolder createInventory(Runnable updateCallback);
+        ItemContainer.Serializable createInventory(Runnable updateCallback);
+
+    }
+
+    @FunctionalInterface
+    public interface UpdateCallback {
+
+        void onUpdated(Level level, BlockPos pos, BlockState state, ItemContainer inventory);
 
     }
 

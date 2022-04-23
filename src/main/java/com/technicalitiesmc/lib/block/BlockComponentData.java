@@ -13,7 +13,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class BlockComponentData implements ICapabilityProvider {
+public abstract class BlockComponentData<C extends BlockComponent.WithData<?>> implements ICapabilityProvider {
 
     private final Context context;
 
@@ -69,6 +69,10 @@ public abstract class BlockComponentData implements ICapabilityProvider {
         return context.getBlockState();
     }
 
+    protected final C getComponent() {
+        return (C) context.getComponent();
+    }
+
     protected final void markUnsaved() {
         context.markUnsaved();
     }
@@ -95,6 +99,8 @@ public abstract class BlockComponentData implements ICapabilityProvider {
         BlockPos getBlockPos();
 
         BlockState getBlockState();
+
+        BlockComponent.WithData<?> getComponent();
 
         void markUnsaved();
 

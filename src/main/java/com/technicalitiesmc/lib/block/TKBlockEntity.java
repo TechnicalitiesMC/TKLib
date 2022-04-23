@@ -19,7 +19,6 @@ import java.util.Map;
 
 public final class TKBlockEntity extends BlockEntity {
 
-    private final Context context = new Context();
     private final Map<String, BlockComponentData> namedData;
     private final Map<BlockComponent, BlockComponentData> componentData;
 
@@ -32,7 +31,7 @@ public final class TKBlockEntity extends BlockEntity {
         var namedData = ImmutableMap.<String, BlockComponentData>builder();
         var componentData = ImmutableMap.<BlockComponent, BlockComponentData>builder();
         block.components.forEach((name, component) -> {
-            var data = component.createData(context);
+            var data = component.createData(new Context(component));
             namedData.put(name, data);
             componentData.put(component, data);
         });
@@ -144,6 +143,12 @@ public final class TKBlockEntity extends BlockEntity {
 
     private class Context implements BlockComponentData.Context {
 
+        private final BlockComponent.WithData<?> component;
+
+        public Context(BlockComponent.WithData<?> component) {
+            this.component = component;
+        }
+
         @Override
         public Level getLevel() {
             return TKBlockEntity.this.getLevel();
@@ -157,6 +162,11 @@ public final class TKBlockEntity extends BlockEntity {
         @Override
         public BlockState getBlockState() {
             return TKBlockEntity.this.getBlockState();
+        }
+
+        @Override
+        public BlockComponent.WithData<?> getComponent() {
+            return component;
         }
 
         @Override

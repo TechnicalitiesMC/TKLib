@@ -14,6 +14,16 @@ public class BlockData<T extends BlockComponentData> extends BlockComponent.With
         super(context, constructor);
     }
 
+    // Static construction
+
+    public static <T extends BlockComponentData> BlockComponent.Constructor<BlockData<T>> of(
+            BlockComponentData.Constructor<T> constructor
+    ) {
+        return context -> new BlockData<>(context, constructor);
+    }
+
+    // API
+
     @Nullable
     public T at(BlockGetter level, BlockPos pos, BlockState state) {
         return getData(level, pos, state);
