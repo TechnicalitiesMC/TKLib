@@ -1,9 +1,14 @@
 package com.technicalitiesmc.lib.math;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 public class IndexedShape extends CustomShape {
 
@@ -24,6 +29,13 @@ public class IndexedShape extends CustomShape {
 
     public int getIndex() {
         return index;
+    }
+
+    @Nullable
+    @Override
+    public BlockHitResult clip(Vec3 start, Vec3 end, BlockPos pos) {
+        var hit = super.clip(start, end, pos);
+        return hit != null ? new IndexedBlockHitResult(hit, this, index) : null;
     }
 
 }
