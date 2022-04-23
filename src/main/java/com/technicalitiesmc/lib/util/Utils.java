@@ -4,7 +4,7 @@ import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -14,10 +14,8 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Utils {
@@ -97,7 +95,7 @@ public class Utils {
     /**
      * Resolves the block hit to a state. If this is a multipart hit, the returned state is the state of the part.
      */
-    public static BlockState resolveHit(LevelAccessor level, BlockHitResult hit) {
+    public static BlockState resolveHit(BlockGetter level, BlockHitResult hit) {
         return level.getBlockState(hit.getBlockPos());
     }
 
@@ -106,6 +104,17 @@ public class Utils {
      */
     public static <T> Set<T> newIdentityHashSet() {
         return Collections.newSetFromMap(new IdentityHashMap<>());
+    }
+
+    /**
+     * Creates and fills an enum map with values.
+     */
+    public static <K extends Enum<K>, V> EnumMap<K, V> newFilledEnumMap(Class<K> keyType, Function<K, V> valueMapper) {
+        var map = new EnumMap<K, V>(keyType);
+        for (var key : keyType.getEnumConstants()) {
+            map.put(key, valueMapper.apply(key));
+        }
+        return map;
     }
 
     @Nullable
