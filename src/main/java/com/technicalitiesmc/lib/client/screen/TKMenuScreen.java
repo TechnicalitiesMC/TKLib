@@ -22,6 +22,19 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
     }
 
     @Override
+    protected void init() {
+        super.init();
+        this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
+    }
+
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(poseStack);
+        super.render(poseStack, mouseX, mouseY, partialTick);
+        this.renderTooltip(poseStack, mouseX, mouseY);
+    }
+
+    @Override
     protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
