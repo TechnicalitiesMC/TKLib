@@ -1,9 +1,14 @@
 package com.technicalitiesmc.lib.util;
 
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8<T, F>> {
+public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8<T, F>> implements Iterable<T> {
 
     public static byte makeMask(Enum<?> value) {
         return (byte) (1 << value.ordinal());
@@ -26,6 +31,8 @@ public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8
     protected final byte getValue() {
         return value;
     }
+
+    protected abstract Class<T> getType();
 
     protected abstract F create(byte value);
 
@@ -91,13 +98,41 @@ public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8
         return create((byte) (value & values.getValue()));
     }
 
-    public Stream<T> stream(Class<T> clazz) {
-        return Arrays.stream(clazz.getEnumConstants())
+    public byte serialize() {
+        return value;
+    }
+
+    public Stream<T> stream() {
+        return Arrays.stream(getType().getEnumConstants())
                 .filter(this::has);
     }
 
-    public byte serialize() {
-        return value;
+    @Override
+    public Iterator<T> iterator() {
+        return stream().iterator();
+    }
+
+    public <V> EnumMap<T, V> map(Function<T, V> valueMapper) {
+        var map = new EnumMap<T, V>(getType());
+        for (var entry : this) {
+            map.put(entry, valueMapper.apply(entry));
+        }
+        return map;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + stream().map(Enum::name).collect(Collectors.joining(", ")) + "]";
+    }
+
+    // TODO: Optimize. There has to be a faster way to do this
+    public T random(Random random) {
+        if (value == 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        var setBits = Integer.bitCount(value & 0xFF);
+        var index = random.nextInt(setBits);
+        return stream().skip(index).findAny().orElseThrow();
     }
 
 }

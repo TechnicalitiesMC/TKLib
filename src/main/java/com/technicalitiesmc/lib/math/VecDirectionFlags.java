@@ -2,10 +2,7 @@ package com.technicalitiesmc.lib.math;
 
 import com.technicalitiesmc.lib.util.AbstractFlags8;
 
-import java.util.Iterator;
-import java.util.stream.Collectors;
-
-public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirectionFlags> implements Iterable<VecDirection> {
+public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirectionFlags> {
 
     private static final VecDirectionFlags NONE = new VecDirectionFlags((byte) 0b000000);
     private static final VecDirectionFlags ALL = new VecDirectionFlags((byte) 0b111111);
@@ -41,18 +38,13 @@ public class VecDirectionFlags extends AbstractFlags8<VecDirection, VecDirection
     }
 
     @Override
+    protected Class<VecDirection> getType() {
+        return VecDirection.class;
+    }
+
+    @Override
     protected VecDirectionFlags create(byte value) {
         return new VecDirectionFlags(value);
-    }
-
-    @Override
-    public Iterator<VecDirection> iterator() {
-        return stream(VecDirection.class).iterator();
-    }
-
-    @Override
-    public String toString() {
-        return "[" + stream(VecDirection.class).map(VecDirection::name).collect(Collectors.joining(", ")) + "]";
     }
 
 }

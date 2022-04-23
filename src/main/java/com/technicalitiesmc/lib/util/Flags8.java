@@ -22,8 +22,18 @@ public class Flags8<T extends Enum<T>> extends AbstractFlags8<T, Flags8<T>> {
     }
 
     @Override
+    protected Class<T> getType() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected Flags8<T> create(byte value) {
         return new Flags8<>(value);
+    }
+
+    @Override
+    public String toString() {
+        return "[???]";
     }
 
 }

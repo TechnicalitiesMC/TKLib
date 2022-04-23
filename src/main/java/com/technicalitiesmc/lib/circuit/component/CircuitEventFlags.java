@@ -2,9 +2,7 @@ package com.technicalitiesmc.lib.circuit.component;
 
 import com.technicalitiesmc.lib.util.AbstractFlags8;
 
-import java.util.Iterator;
-
-public class CircuitEventFlags extends AbstractFlags8<CircuitEvent, CircuitEventFlags> implements Iterable<CircuitEvent> {
+public class CircuitEventFlags extends AbstractFlags8<CircuitEvent, CircuitEventFlags> {
 
     private static final CircuitEventFlags NONE = new CircuitEventFlags((byte) 0b000000);
 
@@ -25,13 +23,13 @@ public class CircuitEventFlags extends AbstractFlags8<CircuitEvent, CircuitEvent
     }
 
     @Override
-    protected CircuitEventFlags create(byte value) {
-        return new CircuitEventFlags(value);
+    protected Class<CircuitEvent> getType() {
+        return CircuitEvent.class;
     }
 
     @Override
-    public Iterator<CircuitEvent> iterator() {
-        return stream(CircuitEvent.class).iterator();
+    protected CircuitEventFlags create(byte value) {
+        return new CircuitEventFlags(value);
     }
 
 }
