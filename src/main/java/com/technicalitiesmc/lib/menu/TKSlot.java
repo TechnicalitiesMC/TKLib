@@ -1,6 +1,6 @@
 package com.technicalitiesmc.lib.menu;
 
-import com.technicalitiesmc.lib.inventory.ItemHolder;
+import com.technicalitiesmc.lib.container.item.ItemContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
@@ -15,14 +15,14 @@ public class TKSlot extends Slot implements LockableSlot, ColoredSlot {
 
     private static final Container EMPTY_CONTAINER = new SimpleContainer(0);
 
-    private final ItemHolder inventory;
+    private final ItemContainer inventory;
     private final int slot;
     private final Set<Consumer<TKSlot>> updateCallbacks = new HashSet<>();
 
     private boolean locked = false;
     private int color = 0;
 
-    public TKSlot(int x, int y, ItemHolder inventory, int slot) {
+    public TKSlot(int x, int y, ItemContainer inventory, int slot) {
         super(EMPTY_CONTAINER, 0, x, y);
         this.inventory = inventory;
         this.slot = slot;
@@ -64,6 +64,14 @@ public class TKSlot extends Slot implements LockableSlot, ColoredSlot {
     @Override
     public void set(ItemStack stack) {
         inventory.set(slot, stack);
+        for (var consumer : updateCallbacks) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
         for (var consumer : updateCallbacks) {
             consumer.accept(this);
         }

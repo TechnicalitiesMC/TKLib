@@ -1,50 +1,51 @@
-package com.technicalitiesmc.lib.inventory;
+package com.technicalitiesmc.lib.container.item.adapter;
 
+import com.technicalitiesmc.lib.container.item.ItemContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class VanillaContainerAdapter implements Container {
+public class ItemContainerToContainerAdapter implements Container {
 
-    private final ItemHolder inventory;
+    protected final ItemContainer itemContainer;
 
-    public VanillaContainerAdapter(ItemHolder inventory) {
-        this.inventory = inventory;
+    public ItemContainerToContainerAdapter(ItemContainer itemContainer) {
+        this.itemContainer = itemContainer;
     }
 
     @Override
     public int getContainerSize() {
-        return inventory.getSize();
+        return itemContainer.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return inventory.isEmpty();
+        return itemContainer.isEmpty();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return inventory.get(slot);
+        return itemContainer.get(slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amt) {
-        ItemStack stack = inventory.get(slot);
+        ItemStack stack = itemContainer.get(slot);
         ItemStack split = stack.split(amt);
-        inventory.set(slot, stack);
+        itemContainer.set(slot, stack);
         return split;
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        ItemStack stack = inventory.get(slot);
-        inventory.set(slot, ItemStack.EMPTY);
+        ItemStack stack = itemContainer.get(slot);
+        itemContainer.set(slot, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
-        inventory.set(slot, stack);
+        itemContainer.set(slot, stack);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class VanillaContainerAdapter implements Container {
 
     @Override
     public void clearContent() {
-        inventory.clear();
+        itemContainer.clear();
     }
 
 }
