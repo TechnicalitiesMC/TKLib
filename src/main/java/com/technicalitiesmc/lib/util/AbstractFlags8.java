@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +16,10 @@ public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8
     }
 
     public static byte makeMask(Enum<?>... values) {
+        return makeMask(Arrays.asList(values));
+    }
+
+    public static byte makeMask(Iterable<? extends Enum<?>> values) {
         var value = (byte) 0;
         for (var val : values) {
             value |= makeMask(val);
@@ -96,6 +101,11 @@ public abstract class AbstractFlags8<T extends Enum<T>, F extends AbstractFlags8
 
     public F onlyIn(F values) {
         return create((byte) (value & values.getValue()));
+    }
+
+    public F where(Predicate<T> predicate) {
+        var allowed = stream().filter(predicate).toList();
+        return create((byte) (value & makeMask(allowed)));
     }
 
     public byte serialize() {
