@@ -1,10 +1,13 @@
 package com.technicalitiesmc.lib.util;
 
 import com.technicalitiesmc.lib.math.VecDirection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -124,6 +127,33 @@ public class Utils {
             return cap.orElse(null).getColor();
         }
         return DyeColor.getColor(stack);
+    }
+
+    public static ItemEntity dropItemAt(Level level, BlockPos pos, ItemStack stack) {
+        var entity = new ItemEntity(
+                level,
+                pos.getX() + 0.5,
+                pos.getY() + 0.5,
+                pos.getZ() + 0.5,
+                stack
+        );
+        level.addFreshEntity(entity);
+        return entity;
+    }
+
+    public static ItemEntity dropItemOutwardsAtSide(Level level, BlockPos pos, Direction side, ItemStack stack) {
+        var entity = new ItemEntity(
+                level,
+                pos.getX() + (side.getStepX() + 1) / 2f,
+                pos.getY() + (side.getStepY() + 1) / 2f,
+                pos.getZ() + (side.getStepZ() + 1) / 2f,
+                stack,
+                side.getStepX() * 0.2f,
+                side.getStepY() * 0.2f,
+                side.getStepZ() * 0.2f
+        );
+        level.addFreshEntity(entity);
+        return entity;
     }
 
 }
