@@ -21,7 +21,7 @@ archivesBaseName = 'TKLib'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 mixin {
-    add sourceSets.main, 'tklib.mixin.json'
+    add sourceSets.main, 'tklib.refmap.json'
 }
 
 minecraft {
@@ -88,7 +88,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${_mcversion}-${_forgeversion}"
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
 }
 
 jar {
