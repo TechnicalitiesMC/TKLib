@@ -7,6 +7,7 @@ import com.technicalitiesmc.lib.container.item.SimpleItemContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.BlockGetter;
@@ -30,7 +31,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     private static final UpdateCallback EMPTY_CALLBACK = ($, $$, $$$, $$$$) -> {};
 
     private final InventoryFactory inventoryFactory;
-    private final boolean shouldDropItemsOnBreak, shouldUpdateComparators, shouldExposeCaps;
+    private final boolean shouldDropItemsOnBreak, shouldUpdateComparators, shouldExposeCaps, shouldSendToClients;
     private final UpdateCallback updateCallback;
 
     private BlockInventory(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags, @Nullable UpdateCallback updateCallback) {
@@ -39,6 +40,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
         this.shouldDropItemsOnBreak = flags.contains(Flag.DROP_ON_BREAK);
         this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
         this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);
+        this.shouldSendToClients = flags.contains(Flag.SEND_TO_CLIENTS);
         this.updateCallback = updateCallback != null ? updateCallback : EMPTY_CALLBACK;
     }
 
@@ -86,7 +88,6 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     public static class Data extends BlockComponentData<BlockInventory> {
 
-
         private final ItemContainer.Serializable inventory;
         private final LazyOptional<IItemHandler> itemHandler;
 
@@ -131,12 +132,28 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
             inventory.load(tag.getCompound("inventory"));
         }
 
+        @Override
+        public CompoundTag saveDescription(CompoundTag tag) {
+            if (getComponent().shouldSendToClients) {
+                tag.put("inventory", inventory.save());
+            }
+            return tag;
+        }
+
+        @Override
+        public void loadDescription(CompoundTag tag) {
+            if (getComponent().shouldSendToClients) {
+                inventory.load(tag.getCompound("inventory"));
+            }
+        }
+
     }
 
     public enum Flag {
         COMPARATOR_OUTPUT,
         DROP_ON_BREAK,
-        EXPOSE_ITEM_HANDLER
+        EXPOSE_ITEM_HANDLER,
+        SEND_TO_CLIENTS
     }
 
     @FunctionalInterface
