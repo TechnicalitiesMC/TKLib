@@ -22,7 +22,7 @@ public class MergedShape extends CustomShape {
         return shapes
                 .filter(Objects::nonNull)
                 .map(MergedShape::unwrap)
-                .reduce((a, b) -> Shapes.join(a, b, BooleanOp.OR))
+                .reduce((a, b) -> Shapes.joinUnoptimized(a, b, BooleanOp.OR))
                 .map(VoxelShape::optimize)
                 .orElse(Shapes.empty());
     }
