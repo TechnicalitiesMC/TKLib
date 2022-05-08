@@ -13,6 +13,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
@@ -28,15 +30,20 @@ public abstract sealed class BlockComponent {
         return context.getBlock();
     }
 
+    @Nullable
+    protected Object getInterface(Class<?> itf) {
+        return null;
+    }
+
     protected BlockState getStateForPlacement(BlockPlaceContext context, BlockState state) {
         return state;
     }
 
-    public BlockState updateShape(BlockState state, Direction side, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState updateShape(BlockState state, Direction side, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         return state;
     }
 
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos neighborPos, boolean moving) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos neighborPos, boolean moving) {
     }
 
     protected InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -48,6 +55,11 @@ public abstract sealed class BlockComponent {
 
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return 0;
+    }
+
+    @Nullable
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return null;
     }
 
     public static abstract non-sealed class WithoutData extends BlockComponent {

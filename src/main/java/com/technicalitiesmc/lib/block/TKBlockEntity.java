@@ -172,15 +172,20 @@ public final class TKBlockEntity extends BlockEntity {
         @Override
         public void markUnsaved() {
             var level = getLevel();
-            var pos = getBlockPos();
-            if (level.hasChunkAt(pos)) {
-                level.getChunkAt(pos).setUnsaved(true);
+            if (level != null) {
+                var pos = getBlockPos();
+                if (level.hasChunkAt(pos)) {
+                    level.getChunkAt(pos).setUnsaved(true);
+                }
             }
         }
 
         @Override
         public void updateComparators() {
-            getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
+            var level = getLevel();
+            if (level != null) {
+                level.updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
+            }
         }
 
         @Override

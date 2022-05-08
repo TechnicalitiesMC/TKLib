@@ -10,6 +10,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -18,6 +19,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
@@ -55,6 +58,22 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
     @Override
     public final TKBlock getBlock() {
         return this;
+    }
+
+    @Nullable
+    public Object getInterface(Class<?> itf) {
+        return getInterfaceFromComponents(itf);
+    }
+
+    @Nullable
+    protected final Object getInterfaceFromComponents(Class<?> itf) {
+        for (var component : components) {
+            var impl = component.getInterface(itf);
+            if (impl != null) {
+                return impl;
+            }
+        }
+        return null;
     }
 
     public final Component getDefaultContainerName() {
@@ -128,10 +147,21 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
         return signal;
     }
 
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        for (var component : getComponents()) {
+            var shape = component.getShape(state, level, pos, context);
+            if (shape != null) {
+                return shape;
+            }
+        }
+        return super.getShape(state, level, pos, context);
+    }
+
     public static class WithEntity extends TKBlock implements EntityBlock {
 
         final RegistryObject<BlockEntityType<TKBlockEntity>> entityType;
-        final Map<String, BlockComponent.WithData> components = new HashMap<>();
+        final Map<String, BlockComponent.WithData<?>> components = new HashMap<>();
 
         public WithEntity(Properties properties, RegistryObject<BlockEntityType<TKBlockEntity>> entityType) {
             super(properties);
@@ -150,6 +180,19 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
             return entityType.get().create(pos, state);
         }
 
+    }
+
+    // Static helpers
+
+    @Nullable
+    public static <T> T getInterface(Block block, Class<T> itf) {
+        if (block instanceof TKBlock tkb) {
+            return (T) tkb.getInterface(itf);
+        }
+        if (itf.isAssignableFrom(block.getClass())) {
+            return (T) block;
+        }
+        return null;
     }
 
 }
