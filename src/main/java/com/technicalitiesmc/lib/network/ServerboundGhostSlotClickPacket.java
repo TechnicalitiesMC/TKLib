@@ -1,6 +1,6 @@
 package com.technicalitiesmc.lib.network;
 
-import com.technicalitiesmc.lib.menu.TKGhostSlot;
+import com.technicalitiesmc.lib.menu.slot.TKGhostSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

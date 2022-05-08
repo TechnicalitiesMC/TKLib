@@ -1,16 +1,21 @@
 package com.technicalitiesmc.lib.menu;
 
 import com.technicalitiesmc.lib.container.item.ItemContainer;
+import com.technicalitiesmc.lib.menu.slot.TKGhostSlot;
+import com.technicalitiesmc.lib.menu.slot.TKSlot;
+import com.technicalitiesmc.lib.util.value.Reference;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,18 +27,53 @@ public abstract class TKMenu extends AbstractContainerMenu {
 
     private final List<Region> regions = new ArrayList<>();
     private final Int2ObjectMap<Region> slotRegions = new Int2ObjectOpenHashMap<>();
+    private final List<MenuComponent> components = new ArrayList<>();
+    private final Tracker dataTracker = new Tracker();
 
     protected final Inventory playerInv;
+    private final ResourceLocation texture;
+    private final int width, height;
 
+    @Deprecated(forRemoval = true)
     protected TKMenu(RegistryObject<? extends MenuType<?>> type, int id, Inventory playerInv) {
+        this(type, id, playerInv, null, 176, 166);
+    }
+
+    protected TKMenu(
+            RegistryObject<? extends MenuType<?>> type, int id, Inventory playerInv,
+            ResourceLocation texture, int width, int height
+    ) {
         super(type.get(), id);
         this.playerInv = playerInv;
+        this.texture = texture;
+        this.width = width;
+        this.height = height;
     }
 
     protected final Region createRegion() {
         var region = new Region();
         regions.add(region);
         return region;
+    }
+
+    @Contract(value = "_ -> param1", pure = true)
+    protected final <T extends MenuComponent> T add(T component) {
+        component.id = components.size();
+        components.add(component);
+        component.subscribe(dataTracker);
+        return component;
+    }
+
+    public ResourceLocation texture() {
+        return texture;
+    }
+
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
     }
 
     @Override
@@ -56,6 +96,17 @@ public abstract class TKMenu extends AbstractContainerMenu {
         s.set(stack);
 
         return ItemStack.EMPTY;
+    }
+
+    public void onMessage(int component, byte[] data) {
+        var c = components.get(component);
+        var buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(data));
+        c.onEvent(buf);
+        buf.release();
+    }
+
+    public List<MenuComponent> components() {
+        return components;
     }
 
     public final class Region implements RegionHandle {
@@ -178,6 +229,46 @@ public abstract class TKMenu extends AbstractContainerMenu {
     public interface SlotFactory<T extends Slot> {
 
         T createSlot(int x, int y, int index);
+
+    }
+
+    private class Tracker implements MenuComponent.DataTracker {
+
+        @Override
+        public void trackInts(int[] array) {
+            addDataSlots(new ContainerData() {
+                @Override
+                public int get(int i) {
+                    return array[i];
+                }
+
+                @Override
+                public void set(int i, int value) {
+                    array[i] = value;
+                }
+
+                @Override
+                public int getCount() {
+                    return array.length;
+                }
+            });
+        }
+
+        @Override
+        public void trackEnum(Reference<? extends Enum<?>> reference) {
+            addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    return reference.get().ordinal();
+                }
+
+                @Override
+                public void set(int value) {
+                    var type = reference.get().getClass();
+                    ((Reference) reference).set(type.getEnumConstants()[value]);
+                }
+            });
+        }
 
     }
 

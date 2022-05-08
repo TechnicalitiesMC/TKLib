@@ -22,6 +22,7 @@ public class TKLibNetworkHandler {
                 s -> true);
 
         register(ServerboundGhostSlotClickPacket.class, ServerboundGhostSlotClickPacket::new);
+        register(ServerboundMenuComponentMessagePacket.class, ServerboundMenuComponentMessagePacket::new);
     }
 
     private static <T extends Packet> void register(Class<T> type, Function<FriendlyByteBuf, T> decoder) {
@@ -42,6 +43,10 @@ public class TKLibNetworkHandler {
 
     public static void sendServerboundGhostSlotClick(int slotNumber) {
         sendToServer(new ServerboundGhostSlotClickPacket(slotNumber));
+    }
+
+    public static void sendMenuComponentMessage(int component, byte[] data) {
+        sendToServer(new ServerboundMenuComponentMessagePacket(component, data));
     }
 
 }

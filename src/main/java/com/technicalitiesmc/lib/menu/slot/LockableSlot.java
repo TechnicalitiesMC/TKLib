@@ -1,4 +1,4 @@
-package com.technicalitiesmc.lib.menu;
+package com.technicalitiesmc.lib.menu.slot;
 
 public interface LockableSlot {
 

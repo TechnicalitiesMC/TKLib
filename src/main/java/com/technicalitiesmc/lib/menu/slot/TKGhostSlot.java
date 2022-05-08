@@ -1,4 +1,4 @@
-package com.technicalitiesmc.lib.menu;
+package com.technicalitiesmc.lib.menu.slot;
 
 import com.technicalitiesmc.lib.container.item.ItemContainer;
 import net.minecraft.world.entity.player.Player;
