@@ -2,6 +2,7 @@ package com.technicalitiesmc.lib.client;
 
 import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.block.CustomBlockHighlight;
+import com.technicalitiesmc.lib.block.TKBlock;
 import com.technicalitiesmc.lib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -22,7 +23,8 @@ public class TKLibClientEventHandler {
         var target = event.getTarget();
 
         var state = Utils.resolveHit(mc.level, target);
-        if (!(state.getBlock() instanceof CustomBlockHighlight cbh)) {
+        var cbh = TKBlock.getInterface(state.getBlock(), CustomBlockHighlight.class);
+        if (cbh == null) {
             return;
         }
 
