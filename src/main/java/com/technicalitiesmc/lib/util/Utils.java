@@ -24,8 +24,12 @@ import java.util.function.Supplier;
 
 public class Utils {
 
-    private static final Capability<DyeHolder> DYE_HOLDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
+    private static final Capability<DyeHolder> DYE_HOLDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
+    public static Supplier<Level> CLIENT_LEVEL_SUPPLIER = () -> null;
+
+    public static Level getClientLevel() {
+        return CLIENT_LEVEL_SUPPLIER.get();
+    }
 
     /**
      * Sets the bit at the specified position to the given state.

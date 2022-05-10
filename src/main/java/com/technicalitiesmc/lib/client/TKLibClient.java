@@ -3,6 +3,8 @@ package com.technicalitiesmc.lib.client;
 import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.init.TKLibMenus;
 import com.technicalitiesmc.lib.util.AccurateTime;
+import com.technicalitiesmc.lib.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,6 +20,7 @@ public final class TKLibClient {
     @SubscribeEvent
     public static void setup(final FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, AccurateTime.Client::onClientTick);
+        Utils.CLIENT_LEVEL_SUPPLIER = () -> Minecraft.getInstance().level;
         event.enqueueWork(() -> {
             registerScreens();
         });
