@@ -1,5 +1,6 @@
 package com.technicalitiesmc.lib.item;
 
+import com.technicalitiesmc.lib.util.value.Value;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -51,6 +52,23 @@ public class TKItem extends Item {
         var handle = new DataHandle<>(name, serializer, deserializer);
         dataClasses.add(handle);
         return handle;
+    }
+
+    protected final <T extends INBTSerializable<CompoundTag>> DataHandle<Value<T>> addDataValue(String name, DataFactory<T> factory) {
+        return addData(name, val -> val.get().serializeNBT(), (stack, saveCallback, tag) -> {
+            var instance = factory.create(stack, saveCallback);
+            if (instance != null) {
+                instance.deserializeNBT(tag);
+            }
+            return new Value.Notifying<>(instance, saveCallback);
+        });
+    }
+
+    protected final <T> DataHandle<Value<T>> addDataValue(String name, DataSerializer<T> serializer, DataDeserializer<T> deserializer) {
+        return addData(name, val -> serializer.serialize(val.get()), (stack, saveCallback, tag) -> {
+            var instance = deserializer.deserialize(stack, saveCallback, tag);
+            return new Value.Notifying<>(instance, saveCallback);
+        });
     }
 
     protected final <T> void addCapability(Capability<T> capability, Function<ItemStack, LazyOptional<T>> supplier) {

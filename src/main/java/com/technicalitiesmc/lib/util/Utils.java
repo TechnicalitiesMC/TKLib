@@ -1,8 +1,12 @@
 package com.technicalitiesmc.lib.util;
 
+import com.technicalitiesmc.lib.item.TKItem;
 import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -170,6 +174,27 @@ public class Utils {
         );
         level.addFreshEntity(entity);
         return entity;
+    }
+
+    public static CompoundTag saveTagKey(@Nullable TagKey<?> value) {
+        var tag = new CompoundTag();
+        if (value != null) {
+            tag.putString("tag", value.location().toString());
+        }
+        return tag;
+    }
+
+    @Nullable
+    public static <T> TagKey<T> loadTagKey(CompoundTag tag, Function<ResourceLocation, TagKey<T>> factory) {
+        var string = tag.getString("tag");
+        if (string.isEmpty()) {
+            return null;
+        }
+        return factory.apply(new ResourceLocation(string));
+    }
+
+    public static <T> TKItem.DataDeserializer<TagKey<T>> tagKeyLoader(Function<ResourceLocation, TagKey<T>> factory) {
+        return (stack, saveCallback, tag) -> loadTagKey(tag, factory);
     }
 
 }
