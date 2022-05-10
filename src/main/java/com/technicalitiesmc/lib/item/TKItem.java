@@ -75,6 +75,10 @@ public class TKItem extends Item {
         capabilitySuppliers.put(capability, supplier);
     }
 
+    protected final <T> void addRawCapability(Capability<T> capability, Function<ItemStack, T> supplier) {
+        capabilitySuppliers.put(capability, stack -> LazyOptional.of(() -> supplier.apply(stack)));
+    }
+
     // Helpers
 
     protected final InteractionResultHolder<ItemStack> openMenu(Level level, Player player, ItemStack stack, MenuConstructor constructor) {
