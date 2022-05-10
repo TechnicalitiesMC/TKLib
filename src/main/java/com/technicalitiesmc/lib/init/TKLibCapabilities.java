@@ -3,9 +3,8 @@ package com.technicalitiesmc.lib.init;
 import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.circuit.placement.ComponentPlacement;
 import com.technicalitiesmc.lib.item.TKItem;
-import com.technicalitiesmc.lib.util.DyeHolder;
 import com.technicalitiesmc.lib.util.AccurateTime;
-import net.minecraft.client.multiplayer.ClientLevel;
+import com.technicalitiesmc.lib.util.DyeHolder;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -29,7 +28,7 @@ public class TKLibCapabilities {
     }
 
     public static void onAttachLevelCapabilities(AttachCapabilitiesEvent<Level> event) {
-        if (event.getObject() instanceof ClientLevel) {
+        if (event.getObject().isClientSide()) {
             var value = LazyOptional.of(() -> new AccurateTime.Client());
             attachCapability(event, CLIENT_ACCURATE_TIME_NAME, ACCURATE_TIME_CAPABILITY, value);
         }
