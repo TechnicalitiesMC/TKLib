@@ -1,6 +1,7 @@
 package com.technicalitiesmc.lib.inventory;
 
 import com.technicalitiesmc.lib.container.item.ItemContainer;
+import com.technicalitiesmc.lib.item.ItemPredicate;
 import com.technicalitiesmc.lib.menu.EmptyMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 public final class InventoryHelper {
 
     private static final Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    private static final Capability<ItemPredicate> ITEM_PREDICATE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
     private static final IItemHandler EMPTY = new ItemStackHandler(0);
 
@@ -46,6 +48,10 @@ public final class InventoryHelper {
     }
 
     public static boolean matchesFilter(ItemStack filter, ItemStack stack) {
+        var cap = filter.getCapability(ITEM_PREDICATE_CAPABILITY);
+        if (cap.isPresent()) {
+            return cap.orElse(null).test(stack);
+        }
         return ItemHandlerHelper.canItemStacksStack(filter, stack);
     }
 

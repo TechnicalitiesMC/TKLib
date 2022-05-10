@@ -2,6 +2,7 @@ package com.technicalitiesmc.lib.init;
 
 import com.technicalitiesmc.lib.TKLib;
 import com.technicalitiesmc.lib.circuit.placement.ComponentPlacement;
+import com.technicalitiesmc.lib.item.ItemPredicate;
 import com.technicalitiesmc.lib.item.TKItem;
 import com.technicalitiesmc.lib.util.AccurateTime;
 import com.technicalitiesmc.lib.util.DyeHolder;
@@ -25,6 +26,7 @@ public class TKLibCapabilities {
         event.register(ComponentPlacement.class);
         event.register(DyeHolder.class);
         event.register(AccurateTime.class);
+        event.register(ItemPredicate.class);
     }
 
     public static void onAttachLevelCapabilities(AttachCapabilitiesEvent<Level> event) {
