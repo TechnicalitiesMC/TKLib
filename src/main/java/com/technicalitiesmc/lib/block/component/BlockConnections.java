@@ -4,13 +4,13 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.technicalitiesmc.lib.block.BlockComponent;
 import com.technicalitiesmc.lib.block.CustomBlockHighlight;
+import com.technicalitiesmc.lib.init.TKLibItemTags;
 import com.technicalitiesmc.lib.math.IndexedShape;
 import com.technicalitiesmc.lib.math.MergedShape;
 import com.technicalitiesmc.lib.math.ShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -137,7 +137,7 @@ public class BlockConnections<T extends Comparable<T>> extends BlockComponent.Wi
     }
 
     public static boolean isHoldingWrench(Level level, BlockHitResult target, Player player) {
-        return player.getMainHandItem().is(Items.STICK);
+        return player.getMainHandItem().is(TKLibItemTags.WRENCHES);
     }
 
     private record HighlightHandler(FineHighlightPredicate predicate) implements CustomBlockHighlight {
