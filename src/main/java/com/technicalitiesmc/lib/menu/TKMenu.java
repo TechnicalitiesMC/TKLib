@@ -158,9 +158,16 @@ public abstract class TKMenu extends AbstractContainerMenu {
             return slot;
         }
 
+        public void addPlayerSlots(Inventory playerInv) {
+            addPlayerSlots(playerInv, false);
+        }
+
+        public void addPlayerSlots(Inventory playerInv, boolean lockSelected) {
+            addPlayerSlots((width - 160) / 2, height - 82, playerInv, lockSelected);
+        }
+
         public void addPlayerSlots(int x, int y, Inventory playerInv) {
-            addSlots(x, y, 3, 9, playerInv, 9);
-            addSlots(x, y + 58, 1, 9, playerInv, 0);
+            addPlayerSlots(x, y, playerInv, false);
         }
 
         public void addPlayerSlots(int x, int y, Inventory playerInv, boolean lockSelected) {
@@ -178,7 +185,8 @@ public abstract class TKMenu extends AbstractContainerMenu {
                     }
                 });
             } else {
-                addPlayerSlots(x, y, playerInv);
+                addSlots(x, y, 3, 9, playerInv, 9);
+                addSlots(x, y + 58, 1, 9, playerInv, 0);
             }
         }
 
