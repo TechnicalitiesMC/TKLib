@@ -21,6 +21,7 @@ public final class TKLibClient {
     public static void setup(final FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, AccurateTime.Client::onClientTick);
         Utils.CLIENT_LEVEL_SUPPLIER = () -> Minecraft.getInstance().level;
+        Utils.CLIENT_PLAYER_SUPPLIER = () -> Minecraft.getInstance().player;
         event.enqueueWork(() -> {
             registerScreens();
         });

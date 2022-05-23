@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -30,9 +31,14 @@ public class Utils {
 
     private static final Capability<DyeHolder> DYE_HOLDER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
     public static Supplier<Level> CLIENT_LEVEL_SUPPLIER = () -> null;
+    public static Supplier<Player> CLIENT_PLAYER_SUPPLIER = () -> null;
 
     public static Level getClientLevel() {
         return CLIENT_LEVEL_SUPPLIER.get();
+    }
+
+    public static Player getClientPlayer() {
+        return CLIENT_PLAYER_SUPPLIER.get();
     }
 
     /**
