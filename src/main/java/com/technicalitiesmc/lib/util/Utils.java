@@ -24,6 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -136,12 +137,23 @@ public class Utils {
     }
 
     /**
-     * Creates and fills an enum map with values.
+     * Creates and fills a list with values.
      */
     public static <T> List<T> newFilledList(int size, Supplier<T> entryFactory) {
         var list = new ArrayList<T>();
         for (int i = 0; i < size; i++) {
             list.add(entryFactory.get());
+        }
+        return list;
+    }
+
+    /**
+     * Creates and fills a list with values.
+     */
+    public static <T> List<T> newFilledList(int size, IntFunction<T> entryFactory) {
+        var list = new ArrayList<T>();
+        for (int i = 0; i < size; i++) {
+            list.add(entryFactory.apply(i));
         }
         return list;
     }
