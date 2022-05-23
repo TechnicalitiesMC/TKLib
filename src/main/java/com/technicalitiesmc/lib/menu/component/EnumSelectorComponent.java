@@ -17,11 +17,12 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
     private final int x, y, width, height, u, v;
     private final Reference<E> reference;
     private final List<E> values;
+    private final E defaultValue;
     @Nullable
     private final Function<E, TooltipEnabled> tooltipProvider;
 
     public EnumSelectorComponent(int x, int y, int width, int height, int u, int v,
-                                 Reference<E> reference, List<E> values,
+                                 Reference<E> reference, List<E> values, E defaultValue,
                                  @Nullable Function<E, TooltipEnabled> tooltipProvider) {
         this.x = x;
         this.y = y;
@@ -31,13 +32,14 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
         this.v = v;
         this.reference = reference;
         this.values = values;
+        this.defaultValue = defaultValue;
         this.tooltipProvider = tooltipProvider;
     }
 
     public EnumSelectorComponent(int x, int y, int width, int height, int u, int v,
-                                 Reference<E> reference,
+                                 Reference<E> reference, E defaultValue,
                                  @Nullable Function<E, TooltipEnabled> tooltipProvider) {
-        this(x, y, width, height, u, v, reference, (List) List.of(reference.get().getClass().getEnumConstants()), tooltipProvider);
+        this(x, y, width, height, u, v, reference, (List) List.of(reference.get().getClass().getEnumConstants()), defaultValue, tooltipProvider);
     }
 
     @Override
@@ -46,6 +48,7 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
                 x, y, width, height, u, v,
                 Reference.of(reference::get, this::setAndNotify),
                 values,
+                defaultValue,
                 tooltipProvider
         );
     }

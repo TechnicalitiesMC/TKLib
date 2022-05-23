@@ -14,17 +14,19 @@ public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
     private final int u, v;
     private final Reference<E> reference;
     private final List<E> values;
+    private final E defaultValue;
     @Nullable
     private final Function<E, TooltipEnabled> tooltipProvider;
 
     public EnumSelectorWidget(int x, int y, int width, int height, int u, int v,
-                              Reference<E> reference, List<E> values,
+                              Reference<E> reference, List<E> values, E defaultValue,
                               @Nullable Function<E, TooltipEnabled> tooltipProvider) {
         super(x, y, width, height);
         this.u = u;
         this.v = v;
         this.reference = reference;
         this.values = values;
+        this.defaultValue = defaultValue;
         this.tooltipProvider = tooltipProvider;
     }
 
@@ -40,6 +42,8 @@ public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
             cycle(true);
         } else if (button == 1) {
             cycle(false);
+        } else if (button == 2) {
+            reference.set(defaultValue);
         }
     }
 
