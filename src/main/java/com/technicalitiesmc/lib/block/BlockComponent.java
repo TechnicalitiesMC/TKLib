@@ -50,6 +50,12 @@ public abstract sealed class BlockComponent {
         return InteractionResult.PASS;
     }
 
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState prevState, boolean moving) {
+    }
+
+    protected void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack item) {
+    }
+
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
     }
 
@@ -60,6 +66,14 @@ public abstract sealed class BlockComponent {
     @Nullable
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return null;
+    }
+
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state;
+    }
+
+    protected BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation rotation) {
+        return rotate(state, rotation);
     }
 
     public static abstract non-sealed class WithoutData extends BlockComponent {

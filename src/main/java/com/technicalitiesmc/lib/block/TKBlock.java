@@ -124,10 +124,25 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         for (var component : getComponents()) {
             var result = component.use(state, level, pos, player, hand, hit);
-            if (result != InteractionResult.PASS)
+            if (result != InteractionResult.PASS) {
                 return result;
+            }
         }
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState prevState, boolean moving) {
+        for (var component : getComponents()) {
+            component.onPlace(state, level, pos, prevState, moving);
+        }
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack item) {
+        for (var component : getComponents()) {
+            component.setPlacedBy(level, pos, state, entity, item);
+        }
     }
 
     @Override
@@ -156,6 +171,22 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
             }
         }
         return super.getShape(state, level, pos, context);
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        for (var component : getComponents()) {
+            state = component.rotate(state, rotation);
+        }
+        return state;
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation rotation) {
+        for (var component : getComponents()) {
+            state = component.rotate(state, level, pos, rotation);
+        }
+        return state;
     }
 
     public static class WithEntity extends TKBlock implements EntityBlock {
