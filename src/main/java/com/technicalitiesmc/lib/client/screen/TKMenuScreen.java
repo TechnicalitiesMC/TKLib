@@ -102,7 +102,7 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
             if (mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2) {
-                widget.addTooltip(mouseX, mouseY, tooltip);
+                widget.addTooltip(mouseX - x1, mouseY - y1, tooltip);
                 if (!tooltip.isEmpty()) {
                     renderTooltip(poseStack, tooltip, Optional.empty(), mouseX, mouseY);
                     return;
@@ -125,7 +125,7 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
             if (x >= x1 && x < x2 && y >= y1 && y < y2) {
-                if (widget.onMouseDown(x - leftPos, y - topPos, button)) {
+                if (widget.onMouseDown(x - x1, y - y1, button)) {
                     return true;
                 }
             }
@@ -140,7 +140,7 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
             if (x >= x1 && x < x2 && y >= y1 && y < y2) {
-                if (widget.onMouseUp(x - leftPos, y - topPos, button)) {
+                if (widget.onMouseUp(x - x1, y - y1, button)) {
                     return true;
                 }
             }
@@ -155,7 +155,7 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
             if (x >= x1 && x < x2 && y >= y1 && y < y2) {
-                if (widget.onMouseScrolled(x - leftPos, y - topPos, amount)) {
+                if (widget.onMouseScrolled(x - x1, y - y1, amount)) {
                     return true;
                 }
             }
