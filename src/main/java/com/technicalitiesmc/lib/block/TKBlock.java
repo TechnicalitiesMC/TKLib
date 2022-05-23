@@ -100,6 +100,10 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
+    protected final <T extends Comparable<T>> void setDefault(Property<T> property, T value) {
+        registerDefaultState(defaultBlockState().setValue(property, value));
+    }
+
     // Implementation
 
     @Override
