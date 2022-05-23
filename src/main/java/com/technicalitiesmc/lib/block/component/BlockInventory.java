@@ -108,7 +108,7 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
             var component = getComponent();
             component.updateCallback.onUpdated(getLevel(), getBlockPos(), getBlockState(), inventory);
             markUnsaved();
-            if (component.shouldUpdateComparators) {
+            if (component.shouldOutputToComparators) {
                 updateComparators();
             }
         }
