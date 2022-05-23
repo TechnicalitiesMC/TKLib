@@ -25,7 +25,7 @@ public abstract class MenuComponent {
         var bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);
         buf.release();
-        TKLibNetworkHandler.sendMenuComponentMessage(id, bytes);
+        TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytes);
     }
 
     public interface DataTracker {

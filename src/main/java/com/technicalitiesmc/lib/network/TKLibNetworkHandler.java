@@ -52,7 +52,7 @@ public class TKLibNetworkHandler {
         sendToServer(new ServerboundGhostSlotClickPacket(slotNumber));
     }
 
-    public static void sendMenuComponentMessage(int component, byte[] data) {
+    public static void sendServerboundMenuComponentMessage(int component, byte[] data) {
         sendToServer(new ServerboundMenuComponentMessagePacket(component, data));
     }
 
