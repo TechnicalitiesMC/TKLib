@@ -137,7 +137,7 @@ public class BlockConnections<T extends Comparable<T>> extends BlockComponent.Wi
     }
 
     public static boolean isHoldingWrench(Level level, BlockHitResult target, Player player) {
-        return player.getMainHandItem().is(TKLibItemTags.WRENCHES);
+        return player.getMainHandItem().is(TKLibItemTags.TOOLS_WRENCH);
     }
 
     private record HighlightHandler(FineHighlightPredicate predicate) implements CustomBlockHighlight {

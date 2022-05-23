@@ -7,6 +7,6 @@ import net.minecraft.world.item.Item;
 
 public class TKLibItemTags {
 
-    public static final TagKey<Item> WRENCHES = ItemTags.create(new ResourceLocation("forge", "wrenches"));
+    public static final TagKey<Item> TOOLS_WRENCH = ItemTags.create(new ResourceLocation("forge", "tools/wrench"));
 
 }
