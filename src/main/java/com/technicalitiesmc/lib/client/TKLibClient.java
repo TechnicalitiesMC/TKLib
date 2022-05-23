@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,6 +25,7 @@ public final class TKLibClient {
         Utils.CLIENT_PLAYER_SUPPLIER = () -> Minecraft.getInstance().player;
         event.enqueueWork(() -> {
             registerScreens();
+            OverlayRegistry.registerOverlayBottom(TKLib.MODID + ":tooltip", new TooltipOverlay());
         });
     }
 
