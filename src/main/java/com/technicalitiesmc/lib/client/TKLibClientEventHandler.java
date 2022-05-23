@@ -1,15 +1,18 @@
 package com.technicalitiesmc.lib.client;
 
 import com.technicalitiesmc.lib.TKLib;
+import com.technicalitiesmc.lib.block.ScrollingHandler;
 import com.technicalitiesmc.lib.block.CustomBlockHighlight;
 import com.technicalitiesmc.lib.block.TKBlock;
 import com.technicalitiesmc.lib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -46,6 +49,20 @@ public class TKLibClientEventHandler {
         }
 
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onScroll(InputEvent.MouseScrollEvent event) {
+        var mc = Minecraft.getInstance();
+        if (mc.level == null || !(mc.hitResult instanceof BlockHitResult blockHit)) {
+            return;
+        }
+
+        var state = Utils.resolveHit(mc.level, blockHit);
+        var bsh = TKBlock.getInterface(state.getBlock(), ScrollingHandler.class);
+        if (bsh != null && bsh.scroll(state, mc.level, blockHit.getBlockPos(), mc.player, blockHit, event.getScrollDelta())) {
+            event.setCanceled(true);
+        }
     }
 
 }
