@@ -4,6 +4,7 @@ import com.technicalitiesmc.lib.item.TKItem;
 import com.technicalitiesmc.lib.math.VecDirection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -213,6 +214,50 @@ public class Utils {
 
     public static <T> TKItem.DataDeserializer<TagKey<T>> tagKeyLoader(Function<ResourceLocation, TagKey<T>> factory) {
         return (stack, saveCallback, tag) -> loadTagKey(tag, factory);
+    }
+
+    @Nullable
+    public static Direction.AxisDirection getAxisDirection(int value) {
+        if (value == 0) {
+            return null;
+        }
+        return value > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
+    }
+
+    @Nullable
+    public static Direction getDirection(Vec3i vector) {
+        int x = vector.getX(), y = vector.getY(), z = vector.getZ();
+        if (x * y == x + y) {
+            var axisDirection = getAxisDirection(vector.getZ());
+            return axisDirection != null ? Direction.fromAxisAndDirection(Direction.Axis.Z, axisDirection) : null;
+        } else if (x * z == x + z) {
+            var axisDirection = getAxisDirection(y);
+            return axisDirection != null ? Direction.fromAxisAndDirection(Direction.Axis.Y, axisDirection) : null;
+        } else if (y * z == y + z) {
+            var axisDirection = getAxisDirection(x);
+            return axisDirection != null ? Direction.fromAxisAndDirection(Direction.Axis.X, axisDirection) : null;
+        }
+        return null;
+    }
+
+    public static int getMagnitude(Vec3i vector) {
+        return Math.abs(vector.getX()) + Math.abs(vector.getY()) + Math.abs(vector.getZ());
+    }
+
+    private static final Direction[][] ROTATION_PLANES = {
+            { Direction.DOWN, Direction.SOUTH, Direction.UP, Direction.NORTH },
+            { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST },
+            { Direction.DOWN, Direction.WEST, Direction.UP, Direction.EAST },
+    };
+
+    public static Direction rotate(Direction direction, Direction.Axis axis, Rotation rotation) {
+        if (axis == direction.getAxis()) {
+            return direction;
+        }
+        var plane = Arrays.asList(ROTATION_PLANES[axis.ordinal()]);
+        var currentIndex = plane.indexOf(direction);
+        var newIndex = rotation.rotate(currentIndex, plane.size());
+        return plane.get(newIndex);
     }
 
 }
