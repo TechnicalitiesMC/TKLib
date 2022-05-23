@@ -36,9 +36,9 @@ public interface AccurateTime {
 
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.START) {
-                var level = Minecraft.getInstance().level;
-                if (level != null) {
-                    var timeProvider = level.getCapability(Client.ACCURATE_TIME_CAPABILITY).orElse(null);
+                var mc = Minecraft.getInstance();
+                if (!mc.isPaused() && mc.level != null) {
+                    var timeProvider = mc.level.getCapability(Client.ACCURATE_TIME_CAPABILITY).orElse(null);
                     if (timeProvider instanceof Client ctp) {
                         ctp.tick();
                     }
