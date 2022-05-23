@@ -14,5 +14,7 @@
   "tooltip.tklib.color.brown": "Brown",
   "tooltip.tklib.color.green": "Green",
   "tooltip.tklib.color.red": "Red",
-  "tooltip.tklib.color.black": "Black"
+  "tooltip.tklib.color.black": "Black",
+
+  "subtitles.tklib.wrench": "Wrenching Noises"
 }

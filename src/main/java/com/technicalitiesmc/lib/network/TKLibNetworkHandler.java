@@ -1,9 +1,12 @@
 package com.technicalitiesmc.lib.network;
 
 import com.technicalitiesmc.lib.TKLib;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -23,6 +26,7 @@ public class TKLibNetworkHandler {
 
         register(ServerboundGhostSlotClickPacket.class, ServerboundGhostSlotClickPacket::new);
         register(ServerboundMenuComponentMessagePacket.class, ServerboundMenuComponentMessagePacket::new);
+        register(ServerboundRotateBlockPacket.class, ServerboundRotateBlockPacket::new);
     }
 
     private static <T extends Packet> void register(Class<T> type, Function<FriendlyByteBuf, T> decoder) {
@@ -47,6 +51,10 @@ public class TKLibNetworkHandler {
 
     public static void sendMenuComponentMessage(int component, byte[] data) {
         sendToServer(new ServerboundMenuComponentMessagePacket(component, data));
+    }
+
+    public static void sendServerboundRotateBlock(BlockPos pos, Direction.Axis axis, Rotation rotation) {
+        sendToServer(new ServerboundRotateBlockPacket(pos, axis, rotation));
     }
 
 }
