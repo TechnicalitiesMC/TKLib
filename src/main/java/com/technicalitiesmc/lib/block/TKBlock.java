@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,8 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
-public abstract class TKBlock extends Block implements BlockComponent.Context {
+public abstract class TKBlock extends Block implements BlockComponent.Context, RotationHandler {
 
     private static final ThreadLocal<Property<?>[]> STATE_PROPERTIES = new ThreadLocal<>();
     private static Properties cacheStateProperties(Properties properties, Property<?>[] stateProperties) {
@@ -70,6 +72,9 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
 
     @Nullable
     public Object getInterface(Class<?> itf) {
+        if (itf == RotationHandler.class) {
+            return this;
+        }
         return getInterfaceFromComponents(itf);
     }
 
@@ -204,6 +209,30 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
             state = component.rotate(state, level, pos, rotation);
         }
         return state;
+    }
+
+    @Override
+    public boolean rotate(BlockState state, Level level, BlockPos pos, Direction.Axis axis, Rotation rotation) {
+        var actions = new ArrayList<UnaryOperator<BlockState>>();
+        for (var component : getComponents()) {
+            var result = component.rotate(state, level, pos, axis, rotation);
+            if (result.getResult() == InteractionResult.FAIL) {
+                return false;
+            } else if (result.getResult() == InteractionResult.SUCCESS) {
+                actions.add(result.getObject());
+            }
+        }
+        if (actions.isEmpty()) {
+            return false;
+        }
+        var newState = state;
+        for (var action : actions) {
+            newState = action.apply(newState);
+        }
+        if (newState != state) {
+            level.setBlock(pos, newState, level.isClientSide() ? 8 : 3);
+        }
+        return true;
     }
 
     public static class WithEntity extends TKBlock implements EntityBlock {

@@ -5,18 +5,23 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.function.UnaryOperator;
 
 public abstract sealed class BlockComponent {
 
@@ -74,6 +79,13 @@ public abstract sealed class BlockComponent {
 
     protected BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation rotation) {
         return rotate(state, rotation);
+    }
+
+    protected InteractionResultHolder<UnaryOperator<BlockState>> rotate(BlockState state, Level level, BlockPos pos, Direction.Axis axis, Rotation rotation) {
+        if (axis != Direction.Axis.Y || rotate(state, level, pos, rotation) == state) {
+            return new InteractionResultHolder<>(InteractionResult.PASS, UnaryOperator.identity());
+        }
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, s -> rotate(state, level, pos, rotation));
     }
 
     public static abstract non-sealed class WithoutData extends BlockComponent {
