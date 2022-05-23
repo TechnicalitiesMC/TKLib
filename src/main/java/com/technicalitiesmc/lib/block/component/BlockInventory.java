@@ -31,14 +31,14 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
     private static final UpdateCallback EMPTY_CALLBACK = ($, $$, $$$, $$$$) -> {};
 
     private final InventoryFactory inventoryFactory;
-    private final boolean shouldDropItemsOnBreak, shouldUpdateComparators, shouldExposeCaps, shouldSendToClients;
+    private final boolean shouldDropItemsOnBreak, shouldOutputToComparators, shouldExposeCaps, shouldSendToClients;
     private final UpdateCallback updateCallback;
 
     private BlockInventory(Context context, InventoryFactory inventoryFactory, EnumSet<Flag> flags, @Nullable UpdateCallback updateCallback) {
         super(context, Data::new);
         this.inventoryFactory = inventoryFactory;
         this.shouldDropItemsOnBreak = flags.contains(Flag.DROP_ON_BREAK);
-        this.shouldUpdateComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
+        this.shouldOutputToComparators = flags.contains(Flag.COMPARATOR_OUTPUT);
         this.shouldExposeCaps = flags.contains(Flag.EXPOSE_ITEM_HANDLER);
         this.shouldSendToClients = flags.contains(Flag.SEND_TO_CLIENTS);
         this.updateCallback = updateCallback != null ? updateCallback : EMPTY_CALLBACK;
@@ -82,8 +82,14 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
 
     @Override
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
-        var data = getData(level, pos, state);
-        return data == null ? 0 : AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
+        if (shouldOutputToComparators) {
+            var data = getData(level, pos, state);
+            return data == null ? 0 : AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
+        }
+        return 0;
+    }
+
+    public Thing slice(int from, int to) {
     }
 
     public static class Data extends BlockComponentData<BlockInventory> {
