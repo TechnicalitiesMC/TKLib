@@ -18,6 +18,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -31,10 +33,16 @@ import java.util.Map;
 
 public abstract class TKBlock extends Block implements BlockComponent.Context {
 
+    private static final ThreadLocal<Property<?>[]> STATE_PROPERTIES = new ThreadLocal<>();
+    private static Properties cacheStateProperties(Properties properties, Property<?>[] stateProperties) {
+        STATE_PROPERTIES.set(stateProperties);
+        return properties;
+    }
+
     private final List<BlockComponent> components = new ArrayList<>();
 
-    public TKBlock(Properties properties) {
-        super(properties);
+    public TKBlock(Properties properties, Property<?>... stateProperties) {
+        super(cacheStateProperties(properties, stateProperties));
     }
 
     // Component management and initialization
@@ -93,6 +101,11 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
     }
 
     // Implementation
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(STATE_PROPERTIES.get());
+    }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -194,8 +207,8 @@ public abstract class TKBlock extends Block implements BlockComponent.Context {
         final RegistryObject<BlockEntityType<TKBlockEntity>> entityType;
         final Map<String, BlockComponent.WithData<?>> components = new HashMap<>();
 
-        public WithEntity(Properties properties, RegistryObject<BlockEntityType<TKBlockEntity>> entityType) {
-            super(properties);
+        public WithEntity(Properties properties, RegistryObject<BlockEntityType<TKBlockEntity>> entityType, Property<?>... stateProperties) {
+            super(properties, stateProperties);
             this.entityType = entityType;
         }
 
