@@ -9,16 +9,14 @@ import net.minecraftforge.registries.RegistryBuilder;
 
 public class TKLibBlockSlots {
 
-    public static final DeferredRegister<BlockSlot> REGISTRY = DeferredRegister.create(BlockSlot.class, TKLib.MODID);
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(TKLib.MODID, "block_slot");
+    public static final DeferredRegister<BlockSlot> REGISTRY = DeferredRegister.create(REGISTRY_NAME, TKLib.MODID);
 
     static {
-        REGISTRY.makeRegistry("block_slot",
+        REGISTRY.makeRegistry(BlockSlot.class,
                 () -> new RegistryBuilder<BlockSlot>()
-                        .setName(new ResourceLocation(TKLib.MODID, "block_slot"))
-                        .setType(BlockSlot.class)
                         .setMaxID(Integer.MAX_VALUE - 1)
         );
-
         registerAll(FaceSlot.class);
     }
 

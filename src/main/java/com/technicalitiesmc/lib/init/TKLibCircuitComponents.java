@@ -8,13 +8,13 @@ import net.minecraftforge.registries.RegistryBuilder;
 
 public class TKLibCircuitComponents {
 
-    public static final DeferredRegister<ComponentType> REGISTRY = DeferredRegister.create(ComponentType.class, TKLib.MODID);
+    // TODO: Rename registry to "circuit_component_type"
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(TKLib.MODID, "component_type");
+    public static final DeferredRegister<ComponentType> REGISTRY = DeferredRegister.create(REGISTRY_NAME, TKLib.MODID);
 
     static {
-        REGISTRY.makeRegistry("component_type",
+        REGISTRY.makeRegistry(ComponentType.class,
                 () -> new RegistryBuilder<ComponentType>()
-                        .setName(new ResourceLocation(TKLib.MODID, "component_type"))
-                        .setType(ComponentType.class)
                         .setMaxID(Integer.MAX_VALUE - 1)
         );
     }
