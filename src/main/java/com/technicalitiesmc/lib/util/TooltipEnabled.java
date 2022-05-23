@@ -35,8 +35,12 @@ public interface TooltipEnabled {
         );
 
         public static TooltipEnabled of(DyeColor dye) {
-            var component = COMPONENTS.get(dye);
+            var component = nameOf(dye);
             return list -> list.add(component);
+        }
+
+        public static Component nameOf(DyeColor dye) {
+            return COMPONENTS.get(dye);
         }
 
     }
