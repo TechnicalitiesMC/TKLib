@@ -1,6 +1,7 @@
 package com.technicalitiesmc.lib.network;
 
 import com.technicalitiesmc.lib.TKLib;
+import com.technicalitiesmc.lib.item.ifo.ItemFunctionalOverride;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,6 +28,8 @@ public class TKLibNetworkHandler {
         register(ServerboundGhostSlotClickPacket.class, ServerboundGhostSlotClickPacket::new);
         register(ServerboundMenuComponentMessagePacket.class, ServerboundMenuComponentMessagePacket::new);
         register(ServerboundRotateBlockPacket.class, ServerboundRotateBlockPacket::new);
+        register(ClientboundEnableIFOPacket.class, ClientboundEnableIFOPacket::new);
+        register(ClientboundDisableIFOPacket.class, ClientboundDisableIFOPacket::new);
     }
 
     private static <T extends Packet> void register(Class<T> type, Function<FriendlyByteBuf, T> decoder) {
@@ -55,6 +58,14 @@ public class TKLibNetworkHandler {
 
     public static void sendServerboundRotateBlock(BlockPos pos, Direction.Axis axis, Rotation rotation) {
         sendToServer(new ServerboundRotateBlockPacket(pos, axis, rotation));
+    }
+
+    public static void sendClientboundEnableIFO(ServerPlayer player, ItemFunctionalOverride ifo) {
+        sendToClient(new ClientboundEnableIFOPacket(ifo), player);
+    }
+
+    public static void sendClientboundDisableIFO(ServerPlayer player) {
+        sendToClient(new ClientboundDisableIFOPacket(), player);
     }
 
 }

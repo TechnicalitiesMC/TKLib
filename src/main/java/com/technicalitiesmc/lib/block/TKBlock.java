@@ -1,5 +1,7 @@
 package com.technicalitiesmc.lib.block;
 
+import com.technicalitiesmc.lib.item.ifo.IFOManager;
+import com.technicalitiesmc.lib.item.ifo.ItemFunctionalOverride;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -7,8 +9,10 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -31,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public abstract class TKBlock extends Block implements BlockComponent.Context, RotationHandler {
@@ -101,6 +106,13 @@ public abstract class TKBlock extends Block implements BlockComponent.Context, R
     protected final InteractionResult openMenu(Level level, Player player, MenuConstructor constructor, Component title) {
         if (!level.isClientSide()) {
             player.openMenu(new SimpleMenuProvider(constructor, title));
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    protected final InteractionResult applyOverride(Level level, Player player, Supplier<ItemFunctionalOverride> ifo) {
+        if (!level.isClientSide()) {
+            IFOManager.enable(player, ifo.get());
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
