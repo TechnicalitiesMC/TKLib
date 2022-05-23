@@ -182,13 +182,13 @@ public class Utils {
     public static ItemEntity dropItemOutwardsAtSide(Level level, BlockPos pos, Direction side, ItemStack stack) {
         var entity = new ItemEntity(
                 level,
-                pos.getX() + (side.getStepX() + 1) / 2f,
-                pos.getY() + (side.getStepY() + 1) / 2f,
-                pos.getZ() + (side.getStepZ() + 1) / 2f,
+                pos.getX() + (side.getStepX() * 1.5F + 1) / 2f,
+                pos.getY() + (side.getStepY() * 1.5F + 1) / 2f,
+                pos.getZ() + (side.getStepZ() * 1.5F + 1) / 2f,
                 stack,
-                side.getStepX() * 0.2f,
-                side.getStepY() * 0.2f,
-                side.getStepZ() * 0.2f
+                side.getStepX() * 0.2f + level.random.nextFloat() * 0.1f - 0.05f,
+                side.getStepY() * 0.2f + level.random.nextFloat() * 0.1f - 0.05f,
+                side.getStepZ() * 0.2f + level.random.nextFloat() * 0.1f - 0.05f
         );
         level.addFreshEntity(entity);
         return entity;
