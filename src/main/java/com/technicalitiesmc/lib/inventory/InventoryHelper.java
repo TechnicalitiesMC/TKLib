@@ -18,14 +18,16 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.PrimitiveIterator;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public final class InventoryHelper {
 
-    private static final Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
-    private static final Capability<ItemPredicate> ITEM_PREDICATE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    private static final Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
+    private static final Capability<ItemPredicate> ITEM_PREDICATE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
 
     private static final IItemHandler EMPTY = new ItemStackHandler(0);
 
@@ -37,6 +39,34 @@ public final class InventoryHelper {
         return () -> IntStream.range(0, inventory.getSlots())
                 .filter(s -> filter.test(inventory.getStackInSlot(s)))
                 .iterator();
+    }
+
+    public static Set<ItemStack> index(IItemHandler inventory) {
+        var set = new HashSet<ItemStack>();
+        var slots = inventory.getSlots();
+        visit:
+        for (int i = 0; i < slots; i++) {
+            var stack = inventory.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            for (var indexed : set) {
+                if (ItemHandlerHelper.canItemStacksStack(indexed, stack)) {
+                    indexed.grow(stack.getCount());
+                    continue visit;
+                }
+            }
+            set.add(stack.copy());
+        }
+        return set;
+    }
+
+    public static Set<ItemStack> copy(Set<ItemStack> items) {
+        var set = new HashSet<ItemStack>();
+        for (var stack : items) {
+            set.add(stack.copy());
+        }
+        return set;
     }
 
     public static CraftingContainer createCraftingContainer(ItemContainer inventory, int offset) {
@@ -138,6 +168,18 @@ public final class InventoryHelper {
             insertionQuery.commit();
         }
         return insertion.getLeftover();
+    }
+
+    public static ItemStack mergeCountUnchecked(ItemStack first, ItemStack second) {
+        if (first.isEmpty()) {
+            return second;
+        }
+        if (second.isEmpty()) {
+            return first;
+        }
+        var result = first.copy();
+        result.grow(second.getCount());
+        return result;
     }
 
 }
