@@ -48,6 +48,13 @@ public final class InventoryHelper {
     }
 
     public static boolean matchesFilter(ItemStack filter, ItemStack stack) {
+        return matchesFilter(filter, stack, false);
+    }
+
+    public static boolean matchesFilter(ItemStack filter, ItemStack stack, boolean resultIfEmptyFilter) {
+        if (filter.isEmpty()) {
+            return resultIfEmptyFilter;
+        }
         var cap = filter.getCapability(ITEM_PREDICATE_CAPABILITY);
         if (cap.isPresent()) {
             return cap.orElse(null).test(stack);
