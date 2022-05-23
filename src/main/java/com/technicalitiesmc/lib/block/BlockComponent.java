@@ -89,6 +89,10 @@ public abstract sealed class BlockComponent {
             return entity instanceof TKBlockEntity tkEntity ? tkEntity.get(this) : null;
         }
 
+        protected boolean isSerialized() {
+            return true;
+        }
+
     }
 
     @FunctionalInterface

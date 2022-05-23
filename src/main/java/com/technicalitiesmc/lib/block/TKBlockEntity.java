@@ -32,7 +32,9 @@ public final class TKBlockEntity extends BlockEntity {
         var componentData = ImmutableMap.<BlockComponent, BlockComponentData>builder();
         block.components.forEach((name, component) -> {
             var data = component.createData(new Context(component));
-            namedData.put(name, data);
+            if (component.isSerialized()) {
+                namedData.put(name, data);
+            }
             componentData.put(component, data);
         });
         this.namedData = namedData.build();
