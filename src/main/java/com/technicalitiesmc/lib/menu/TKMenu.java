@@ -263,6 +263,21 @@ public abstract class TKMenu extends AbstractContainerMenu {
         }
 
         @Override
+        public void trackInt(Reference<Integer> reference) {
+            addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    return reference.get();
+                }
+
+                @Override
+                public void set(int value) {
+                    reference.set(value);
+                }
+            });
+        }
+
+        @Override
         public void trackEnum(Reference<? extends Enum<?>> reference) {
             addDataSlot(new DataSlot() {
                 @Override

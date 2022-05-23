@@ -32,6 +32,8 @@ public abstract class MenuComponent {
 
         void trackInts(int[] array);
 
+        void trackInt(Reference<Integer> reference);
+
         void trackEnum(Reference<? extends Enum<?>> reference);
 
     }
