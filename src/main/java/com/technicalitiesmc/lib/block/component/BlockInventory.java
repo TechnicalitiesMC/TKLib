@@ -7,7 +7,6 @@ import com.technicalitiesmc.lib.container.item.SimpleItemContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.BlockGetter;
@@ -87,9 +86,6 @@ public class BlockInventory extends BlockComponent.WithData<BlockInventory.Data>
             return data == null ? 0 : AbstractContainerMenu.getRedstoneSignalFromContainer(data.inventory.asVanillaContainer());
         }
         return 0;
-    }
-
-    public Thing slice(int from, int to) {
     }
 
     public static class Data extends BlockComponentData<BlockInventory> {
