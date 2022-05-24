@@ -1,9 +1,9 @@
 package com.technicalitiesmc.lib.container.item;
 
 import com.technicalitiesmc.lib.container.item.adapter.ContainerToItemContainerAdapter;
-import com.technicalitiesmc.lib.container.item.adapter.ItemHandlerToItemContainerAdapter;
 import com.technicalitiesmc.lib.container.item.adapter.ItemContainerToContainerAdapter;
 import com.technicalitiesmc.lib.container.item.adapter.ItemContainerToItemHandlerAdapter;
+import com.technicalitiesmc.lib.container.item.adapter.ItemHandlerToItemContainerAdapter;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
@@ -14,6 +14,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -21,7 +22,7 @@ import java.util.Objects;
  *
  * @see ItemContainer.Serializable
  */
-public interface ItemContainer {
+public interface ItemContainer extends Iterable<ItemStack> {
 
     /**
      * Creates a new serializable item holder with the specified number of slots.
@@ -139,6 +140,29 @@ public interface ItemContainer {
             }
         }
         return true;
+    }
+
+    /**
+     * Creates an iterator over the slots in this inventory.
+     * @return A new iterator.
+     */
+    @Nonnull
+    @Contract(value = "-> new", pure = true)
+    @Override
+    default Iterator<ItemStack> iterator() {
+        return new Iterator<>() {
+            final int size = size();
+            int i = 0;
+            @Override
+            public boolean hasNext() {
+                return i < size;
+            }
+
+            @Override
+            public ItemStack next() {
+                return get(i++);
+            }
+        };
     }
 
     /**
