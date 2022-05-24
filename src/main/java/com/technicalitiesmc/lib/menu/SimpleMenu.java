@@ -8,24 +8,39 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
+
 public class SimpleMenu extends TKMenu {
 
     private final ContainerLevelAccess levelAccess;
-    private final RegistryObject<Block> block;
+    private final List<RegistryObject<Block>> blocks;
 
     protected SimpleMenu(
             RegistryObject<? extends MenuType<?>> type, int id, Inventory playerInv,
             ContainerLevelAccess levelAccess, RegistryObject<Block> block,
             ResourceLocation texture, int width, int height
     ) {
+        this(type, id, playerInv, levelAccess, List.of(block), texture, width, height);
+    }
+
+    protected SimpleMenu(
+            RegistryObject<? extends MenuType<?>> type, int id, Inventory playerInv,
+            ContainerLevelAccess levelAccess, List<RegistryObject<Block>> blocks,
+            ResourceLocation texture, int width, int height
+    ) {
         super(type, id, playerInv, texture, width, height);
         this.levelAccess = levelAccess;
-        this.block = block;
+        this.blocks = blocks;
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(levelAccess, player, block.get());
+        for (var block : blocks) {
+            if (stillValid(levelAccess, player, block.get())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
