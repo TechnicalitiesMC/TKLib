@@ -30,7 +30,7 @@ public class ServerboundGhostSlotClickPacket implements Packet {
             if (slot instanceof TKGhostSlot) {
                 var carried = menu.getCarried();
                 var newItem = carried.copy();
-                newItem.setCount(slot.getMaxStackSize(carried));
+                newItem.setCount(Math.min(newItem.getCount(), slot.getMaxStackSize(carried)));
                 slot.set(newItem);
             }
         });
