@@ -45,7 +45,7 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
     @Override
     public Supplier<Widget> widgetSupplier() {
         return () -> new EnumSelectorWidget<>(
-                x, y, width, height, u, v,
+                x, y, width, height, u, v, this::isEnabled,
                 Reference.of(reference::get, this::setAndNotify),
                 values,
                 defaultValue,

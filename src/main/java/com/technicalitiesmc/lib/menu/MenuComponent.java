@@ -6,12 +6,17 @@ import com.technicalitiesmc.lib.util.value.Reference;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class MenuComponent {
 
+    private static final BooleanSupplier ALWAYS = () -> true;
+    private static final BooleanSupplier NEVER = () -> false;
+
     int id;
+    private BooleanSupplier enabled = () -> true;
 
     public abstract Supplier<Widget> widgetSupplier();
 
@@ -28,9 +33,23 @@ public abstract class MenuComponent {
         TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytes);
     }
 
+    public final boolean isEnabled() {
+        return enabled.getAsBoolean();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled ? ALWAYS : NEVER;
+    }
+
+    public void setEnabledWhen(BooleanSupplier supplier) {
+        this.enabled = supplier;
+    }
+
     public interface DataTracker {
 
         void trackInts(int[] array);
+
+        void trackBoolean(Reference<Boolean> reference);
 
         void trackInt(Reference<Integer> reference);
 

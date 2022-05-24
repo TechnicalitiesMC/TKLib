@@ -28,7 +28,7 @@ public class ComponentListComponent extends MenuComponent {
     @Override
     public Supplier<Widget> widgetSupplier() {
         return () -> new ListWidget<>(
-                x, y, width, height,
+                x, y, width, height, this::isEnabled,
                 () -> StreamSupport.stream(entries.spliterator(), false).map(ListWidget.ComponentEntry::new).iterator(),
                 Reference.of(selectedEntry::get, this::setAndNotify),
                 ListWidget.ComponentEntry.HEIGHT

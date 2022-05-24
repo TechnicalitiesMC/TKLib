@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
@@ -18,10 +19,10 @@ public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
     @Nullable
     private final Function<E, TooltipEnabled> tooltipProvider;
 
-    public EnumSelectorWidget(int x, int y, int width, int height, int u, int v,
+    public EnumSelectorWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier enabled,
                               Reference<E> reference, List<E> values, E defaultValue,
                               @Nullable Function<E, TooltipEnabled> tooltipProvider) {
-        super(x, y, width, height);
+        super(x, y, width, height, enabled);
         this.u = u;
         this.v = v;
         this.reference = reference;

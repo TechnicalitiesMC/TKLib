@@ -85,6 +85,9 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
         poseStack.pushPose();
         poseStack.translate(leftPos, topPos, 0);
         for (var widget : widgets) {
+            if (!widget.enabled()) {
+                continue;
+            }
             poseStack.pushPose();
             var pos = widget.pos();
             poseStack.translate(pos.x(), pos.y(), 0);
@@ -98,6 +101,9 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
         super.renderTooltip(poseStack, mouseX, mouseY);
         var tooltip = new ArrayList<Component>();
         for (var widget : widgets) {
+            if (!widget.enabled()) {
+                continue;
+            }
             Vec2i pos = widget.pos(), size = widget.size();
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
@@ -121,6 +127,9 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             return true;
         }
         for (var widget : widgets) {
+            if (!widget.enabled()) {
+                continue;
+            }
             Vec2i pos = widget.pos(), size = widget.size();
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
@@ -136,6 +145,9 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
     @Override
     public boolean mouseReleased(double x, double y, int button) {
         for (var widget : widgets) {
+            if (!widget.enabled()) {
+                continue;
+            }
             Vec2i pos = widget.pos(), size = widget.size();
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();
@@ -160,6 +172,9 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
             return true;
         }
         for (var widget : widgets) {
+            if (!widget.enabled()) {
+                continue;
+            }
             Vec2i pos = widget.pos(), size = widget.size();
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();
             int x2 = x1 + size.x(), y2 = y1 + size.y();

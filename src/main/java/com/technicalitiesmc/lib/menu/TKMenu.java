@@ -263,6 +263,21 @@ public abstract class TKMenu extends AbstractContainerMenu {
         }
 
         @Override
+        public void trackBoolean(Reference<Boolean> reference) {
+            addDataSlot(new DataSlot() {
+                @Override
+                public int get() {
+                    return reference.get() ? 1: 0;
+                }
+
+                @Override
+                public void set(int value) {
+                    reference.set(value != 0);
+                }
+            });
+        }
+
+        @Override
         public void trackInt(Reference<Integer> reference) {
             addDataSlot(new DataSlot() {
                 @Override

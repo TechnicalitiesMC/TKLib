@@ -12,6 +12,8 @@ public interface Widget {
 
     Vec2i size();
 
+    boolean enabled();
+
     void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks);
 
     default boolean onMouseDown(double x, double y, int button) {

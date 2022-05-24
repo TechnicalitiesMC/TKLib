@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class ListWidget<T extends ListWidget.Entry> extends SimpleWidget {
 
@@ -18,8 +19,9 @@ public class ListWidget<T extends ListWidget.Entry> extends SimpleWidget {
     private final int entryHeight, maxVisibleEntries;
     private int scrolled;
 
-    public ListWidget(int x, int y, int width, int height, Iterable<T> entries, Reference<Integer> selectedEntry, int entryHeight) {
-        super(x, y, width, height);
+    public ListWidget(int x, int y, int width, int height, BooleanSupplier enabled,
+                      Iterable<T> entries, Reference<Integer> selectedEntry, int entryHeight) {
+        super(x, y, width, height, enabled);
         this.entries = entries;
         this.selectedEntry = selectedEntry;
         this.entryHeight = entryHeight;

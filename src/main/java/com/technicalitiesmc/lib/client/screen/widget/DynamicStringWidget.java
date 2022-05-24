@@ -6,14 +6,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class DynamicStringWidget extends SimpleWidget {
 
     private final Supplier<Component> text;
 
-    public DynamicStringWidget(int x, int y, int width, Supplier<Component> text) {
-        super(x, y, width, Minecraft.getInstance().font.lineHeight);
+    public DynamicStringWidget(int x, int y, int width, BooleanSupplier enabled, Supplier<Component> text) {
+        super(x, y, width, Minecraft.getInstance().font.lineHeight, enabled);
         this.text = text;
     }
 

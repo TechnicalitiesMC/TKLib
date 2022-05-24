@@ -3,12 +3,16 @@ package com.technicalitiesmc.lib.client.screen.widget;
 import com.technicalitiesmc.lib.math.Vec2i;
 import net.minecraft.client.gui.GuiComponent;
 
+import java.util.function.BooleanSupplier;
+
 public abstract class SimpleWidget extends GuiComponent implements Widget {
 
     private final Vec2i pos, size;
+    private final BooleanSupplier enabled;
     private boolean focused;
 
-    protected SimpleWidget(int x, int y, int width, int height) {
+    protected SimpleWidget(int x, int y, int width, int height, BooleanSupplier enabled) {
+        this.enabled = enabled;
         this.pos = new Vec2i(x, y);
         this.size = new Vec2i(width, height);
     }
@@ -19,6 +23,11 @@ public abstract class SimpleWidget extends GuiComponent implements Widget {
 
     public Vec2i size() {
         return size;
+    }
+
+    @Override
+    public boolean enabled() {
+        return enabled.getAsBoolean();
     }
 
     protected boolean focused() {

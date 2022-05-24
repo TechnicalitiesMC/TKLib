@@ -22,7 +22,7 @@ public class DynamicStringComponent extends MenuComponent {
 
     @Override
     public Supplier<Widget> widgetSupplier() {
-        return () -> new DynamicStringWidget(x, y, width, text);
+        return () -> new DynamicStringWidget(x, y, width, this::isEnabled, text);
     }
 
     @Override
