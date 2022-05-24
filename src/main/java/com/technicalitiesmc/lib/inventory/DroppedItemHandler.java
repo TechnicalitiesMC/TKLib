@@ -43,14 +43,13 @@ public class DroppedItemHandler implements IItemHandler {
         if (!entity.isAlive()) {
             return ItemStack.EMPTY;
         }
-        var stack = entity.getItem().copy();
+        var stack = entity.getItem();
+        var originalSize = stack.getCount();
         var split = stack.split(amount);
-        if (!simulate) {
-            if (stack.isEmpty()) {
-                entity.remove(Entity.RemovalReason.KILLED);
-            } else {
-                entity.setItem(stack);
-            }
+        if (simulate) {
+            stack.setCount(originalSize);
+        } else if (stack.isEmpty()) {
+            entity.remove(Entity.RemovalReason.KILLED);
         }
         return split;
     }
