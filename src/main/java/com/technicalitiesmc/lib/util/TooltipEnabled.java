@@ -20,9 +20,11 @@ public interface TooltipEnabled {
         default void addTooltip(List<Component> tooltip) {
             var key = getTooltipTranslationKey();
             tooltip.addAll(TextUtils.getLocalized(key));
-            var subtitle = new TranslatableComponent(key + ".subtitle");
-            if (!subtitle.getContents().isEmpty()) {
-                tooltip.addAll(TextUtils.breakUp(subtitle));
+            var subtitleKey = key + ".subtitle";
+            var subtitle = new TranslatableComponent(subtitleKey);
+            var subtitleString = subtitle.getString();
+            if (!subtitleString.equals(subtitleKey)) {
+                tooltip.addAll(TextUtils.breakUp(subtitleString));
             }
         }
 

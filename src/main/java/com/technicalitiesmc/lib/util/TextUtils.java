@@ -12,15 +12,15 @@ public class TextUtils {
 
     public static List<Component> getLocalized(String key, Object... args) {
         var component = new TranslatableComponent(key, args);
-        var contents = component.getContents();
-        if (contents.isEmpty()) {
-            return List.of(new TextComponent(key));
+        var contents = component.getString();
+        if (contents.equals(key)) {
+            return List.of(component);
         }
         return breakUp(component);
     }
 
     public static List<Component> breakUp(Component component) {
-        return breakUp(component.getContents());
+        return breakUp(component.getString());
     }
 
     public static List<Component> breakUp(String contents) {
