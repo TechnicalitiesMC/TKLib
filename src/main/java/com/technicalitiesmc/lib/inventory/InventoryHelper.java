@@ -12,6 +12,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
@@ -64,11 +65,15 @@ public final class InventoryHelper {
 
     @Nullable
     public static IItemHandler getNeighborItemHandler(Level level, BlockPos pos, Direction side) {
+        return getNeighborItemHandlerLazy(level, pos, side).orElse(null);
+    }
+
+    public static LazyOptional<IItemHandler> getNeighborItemHandlerLazy(Level level, BlockPos pos, Direction side) {
         var entity = level.getBlockEntity(pos.relative(side));
         if (entity == null) {
-            return null;
+            return LazyOptional.empty();
         }
-        return entity.getCapability(ITEM_HANDLER_CAPABILITY, side.getOpposite()).orElse(null);
+        return entity.getCapability(ITEM_HANDLER_CAPABILITY, side.getOpposite());
     }
 
     @Nullable
