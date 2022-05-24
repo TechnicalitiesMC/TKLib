@@ -150,6 +150,15 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
 
     @Override
     public boolean mouseScrolled(double x, double y, double amount) {
+        if (hoveredSlot != null && hoveredSlot instanceof TKGhostSlot slot) {
+            var stack = slot.getItem();
+            if (!stack.isEmpty()) {
+                var delta = (int) Math.signum(amount) * (hasShiftDown() ? 8 : 1);
+                stack.setCount(Math.max(1, Math.min(stack.getCount() + delta, slot.getMaxStackSize())));
+                TKLibNetworkHandler.sendServerboundGhostSlotScroll(hoveredSlot.index, delta);
+            }
+            return true;
+        }
         for (var widget : widgets) {
             Vec2i pos = widget.pos(), size = widget.size();
             int x1 = leftPos + pos.x(), y1 = topPos + pos.y();

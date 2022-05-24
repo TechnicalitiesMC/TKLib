@@ -26,6 +26,7 @@ public class TKLibNetworkHandler {
                 s -> true);
 
         register(ServerboundGhostSlotClickPacket.class, ServerboundGhostSlotClickPacket::new);
+        register(ServerboundGhostSlotScrollPacket.class, ServerboundGhostSlotScrollPacket::new);
         register(ServerboundMenuComponentMessagePacket.class, ServerboundMenuComponentMessagePacket::new);
         register(ServerboundRotateBlockPacket.class, ServerboundRotateBlockPacket::new);
         register(ClientboundEnableIFOPacket.class, ClientboundEnableIFOPacket::new);
@@ -50,6 +51,10 @@ public class TKLibNetworkHandler {
 
     public static void sendServerboundGhostSlotClick(int slotNumber) {
         sendToServer(new ServerboundGhostSlotClickPacket(slotNumber));
+    }
+
+    public static void sendServerboundGhostSlotScroll(int slotNumber, int amount) {
+        sendToServer(new ServerboundGhostSlotScrollPacket(slotNumber, amount));
     }
 
     public static void sendServerboundMenuComponentMessage(int component, byte[] data) {
