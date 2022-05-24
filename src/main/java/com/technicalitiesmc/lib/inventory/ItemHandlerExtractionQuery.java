@@ -108,6 +108,9 @@ public class ItemHandlerExtractionQuery {
         if (filter instanceof ItemFilter.Simple s) {
             return filter.test(currentItem) ? s : null;
         }
+        if (filter instanceof ItemFilter.None) {
+            return null;
+        }
         throw new IllegalArgumentException("Custom filter implementations are not allowed in extraction queries.");
     }
 

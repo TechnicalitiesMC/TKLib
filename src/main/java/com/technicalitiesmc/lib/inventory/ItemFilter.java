@@ -20,6 +20,10 @@ public interface ItemFilter {
 
     int getMatchedAmount(ItemStack stack);
 
+    static ItemFilter none() {
+        return None.INSTANCE;
+    }
+
     @Nonnull
     static Builder exactly(int amt) {
         return new Builder(AmountMatchMode.EXACTLY, amt);
@@ -42,6 +46,9 @@ public interface ItemFilter {
 
     @Nonnull
     static ItemFilter anyOf(Collection<ItemFilter> filters) {
+        if (filters.isEmpty()) {
+            return none();
+        }
         var simpleFilters = new ArrayList<Simple>();
         for (var filter : filters) {
             if (filter instanceof Simple s) {
@@ -112,6 +119,22 @@ public interface ItemFilter {
         @Nonnull
         public ItemFilter matching(Predicate<ItemStack> predicate) {
             return new Simple(mode, amount, predicate);
+        }
+
+    }
+
+    record None() implements ItemFilter {
+
+        public static final ItemFilter INSTANCE = new None();
+
+        @Override
+        public boolean test(ItemStack stack) {
+            return false;
+        }
+
+        @Override
+        public int getMatchedAmount(ItemStack stack) {
+            return 0;
         }
 
     }
