@@ -117,6 +117,11 @@ public interface ItemFilter {
         }
 
         @Nonnull
+        public ItemFilter matching(ItemStack filter) {
+            return matching(s -> InventoryHelper.matchesFilter(filter, s));
+        }
+
+        @Nonnull
         public ItemFilter matching(Predicate<ItemStack> predicate) {
             return new Simple(mode, amount, predicate);
         }
