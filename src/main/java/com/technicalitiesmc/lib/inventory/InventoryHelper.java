@@ -131,13 +131,10 @@ public final class InventoryHelper {
     }
 
     public static ItemStack transferStack(ItemStack stack, IItemHandler dst, boolean simulate) {
-        var insertionQuery = new ItemHandlerInsertionQuery(dst);
-        var insertion = insertionQuery.insert(stack);
-        if (!simulate) {
-            insertion.commit();
-            insertionQuery.commit();
+        if (InventoryHintFlags.of(dst).has(InventoryHint.SUPPORTS_QUICK_INSERT)) {
+            return dst.insertItem(-1, stack, simulate);
         }
-        return insertion.getLeftover();
+        return ItemHandlerHelper.insertItem(dst, stack, simulate);
     }
 
     public static ItemStack mergeCountUnchecked(ItemStack first, ItemStack second) {
