@@ -21,7 +21,7 @@ public interface TooltipEnabled {
             var key = getTooltipTranslationKey();
             tooltip.addAll(TextUtils.getLocalized(key));
             var subtitle = new TranslatableComponent(key + ".subtitle");
-            if (!subtitle.getKey().equals(subtitle.getContents())) {
+            if (!subtitle.getContents().isEmpty()) {
                 tooltip.addAll(TextUtils.breakUp(subtitle));
             }
         }
