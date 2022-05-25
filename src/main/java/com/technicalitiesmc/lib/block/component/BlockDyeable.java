@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -34,6 +35,18 @@ public class BlockDyeable extends BlockComponent.WithoutData {
 
     public BlockState withColor(BlockState state, DyeColor color) {
         return state.setValue(property, color);
+    }
+
+    @Override
+    protected BlockState getStateForPlacement(BlockPlaceContext context, BlockState state) {
+        var player = context.getPlayer();
+        if (player != null) {
+            var dye = Utils.getDyeColor(player.getOffhandItem());
+            if (dye != null) {
+                return state.setValue(property, dye);
+            }
+        }
+        return state;
     }
 
     @Override
