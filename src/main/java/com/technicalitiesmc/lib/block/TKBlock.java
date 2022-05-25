@@ -99,6 +99,11 @@ public abstract class TKBlock extends Block implements BlockComponent.Context, R
         return new TranslatableComponent("container." + name.getNamespace() + "." + name.getPath());
     }
 
+    public final Component getDefaultDebugContainerName() {
+        var name = getRegistryName();
+        return new TranslatableComponent("container." + name.getNamespace() + "." + name.getPath() + ".debug");
+    }
+
     protected final InteractionResult openMenu(Level level, Player player, MenuConstructor constructor) {
         return openMenu(level, player, constructor, getDefaultContainerName());
     }

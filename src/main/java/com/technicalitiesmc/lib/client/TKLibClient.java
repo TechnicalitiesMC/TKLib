@@ -1,6 +1,7 @@
 package com.technicalitiesmc.lib.client;
 
 import com.technicalitiesmc.lib.TKLib;
+import com.technicalitiesmc.lib.client.screen.DebugMenuScreen;
 import com.technicalitiesmc.lib.init.TKLibMenus;
 import com.technicalitiesmc.lib.util.AccurateTime;
 import com.technicalitiesmc.lib.util.Utils;
@@ -32,6 +33,7 @@ public final class TKLibClient {
     private static void registerScreens() {
         MenuScreens.register(TKLibMenus.LOCKED_GENERIC_9x3.get(), ContainerScreen::new);
         MenuScreens.register(TKLibMenus.LOCKED_GENERIC_9x6.get(), ContainerScreen::new);
+        MenuScreens.register(TKLibMenus.DEBUG.get(), DebugMenuScreen::new);
     }
 
 }

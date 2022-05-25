@@ -44,6 +44,10 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
         widgets.add(widget);
     }
 
+    protected ResourceLocation getTexture() {
+        return texture;
+    }
+
     @Override
     protected void init() {
         super.init();
