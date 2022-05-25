@@ -31,6 +31,7 @@ public class TKLibNetworkHandler {
         register(ServerboundRotateBlockPacket.class, ServerboundRotateBlockPacket::new);
         register(ClientboundEnableIFOPacket.class, ClientboundEnableIFOPacket::new);
         register(ClientboundDisableIFOPacket.class, ClientboundDisableIFOPacket::new);
+        register(ServerboundQuickBreakPacket.class, ServerboundQuickBreakPacket::new);
     }
 
     private static <T extends Packet> void register(Class<T> type, Function<FriendlyByteBuf, T> decoder) {
@@ -71,6 +72,10 @@ public class TKLibNetworkHandler {
 
     public static void sendClientboundDisableIFO(ServerPlayer player) {
         sendToClient(new ClientboundDisableIFOPacket(), player);
+    }
+
+    public static void sendServerboundQuickBreak(BlockPos pos) {
+        sendToServer(new ServerboundQuickBreakPacket(pos));
     }
 
 }

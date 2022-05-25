@@ -2,8 +2,11 @@ package com.technicalitiesmc.lib;
 
 import com.technicalitiesmc.lib.init.TKLibBlockTags;
 import com.technicalitiesmc.lib.init.TKLibItemTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -19,10 +22,18 @@ public class TKLibEventHandler {
 
     private static final ThreadLocal<Player> COLLECT_DROPS_TARGET = new ThreadLocal<>();
 
-    private static boolean validate(Player player, BlockState state) {
+    public static boolean validate(Player player, BlockState state) {
         return player.isShiftKeyDown() &&
                 state.is(TKLibBlockTags.WRENCH_BREAKS_INSTANTLY) &&
                 player.getMainHandItem().is(TKLibItemTags.TOOLS_WRENCH);
+    }
+
+    public static void quickBreak(ServerPlayer player, BlockPos pos) {
+        var state = player.getLevel().getBlockState(pos);
+        if (validate(player, state)) {
+            player.getLevel().levelEvent(player, 2001, pos, Block.getId(state));
+            player.gameMode.destroyBlock(pos);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -34,18 +45,20 @@ public class TKLibEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (validate(event.getPlayer(), event.getState())) {
+        var player = event.getPlayer();
+        if (validate(player, event.getState())) {
             // destroy progress = break speed / block destroy speed / 30
             // break speed = destroy progress * block destroy speed * 30
-            var blockDestroySpeed = event.getState().getDestroySpeed(event.getPlayer().level, event.getPos());
+            var blockDestroySpeed = event.getState().getDestroySpeed(player.getLevel(), event.getPos());
             event.setNewSpeed(0.98F * blockDestroySpeed * 30);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onBeginBlockBreak(BlockEvent.BreakEvent event) {
-        if (validate(event.getPlayer(), event.getState())) {
-            COLLECT_DROPS_TARGET.set(event.getPlayer());
+        var player = event.getPlayer();
+        if (validate(player, event.getState())) {
+            COLLECT_DROPS_TARGET.set(player);
         }
     }
 
