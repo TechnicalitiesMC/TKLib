@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -27,6 +28,7 @@ public class TKLibNetworkHandler {
 
         register(ServerboundGhostSlotClickPacket.class, ServerboundGhostSlotClickPacket::new);
         register(ServerboundGhostSlotScrollPacket.class, ServerboundGhostSlotScrollPacket::new);
+        register(ServerboundGhostSlotSetPacket.class, ServerboundGhostSlotSetPacket::new);
         register(ServerboundMenuComponentMessagePacket.class, ServerboundMenuComponentMessagePacket::new);
         register(ServerboundRotateBlockPacket.class, ServerboundRotateBlockPacket::new);
         register(ClientboundEnableIFOPacket.class, ClientboundEnableIFOPacket::new);
@@ -56,6 +58,10 @@ public class TKLibNetworkHandler {
 
     public static void sendServerboundGhostSlotScroll(int slotNumber, int amount) {
         sendToServer(new ServerboundGhostSlotScrollPacket(slotNumber, amount));
+    }
+
+    public static void sendServerboundGhostSlotSet(int slotNumber, ItemStack stack) {
+        sendToServer(new ServerboundGhostSlotSetPacket(slotNumber, stack));
     }
 
     public static void sendServerboundMenuComponentMessage(int component, byte[] data) {
