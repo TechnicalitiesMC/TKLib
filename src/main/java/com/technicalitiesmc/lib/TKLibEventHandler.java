@@ -20,7 +20,7 @@ public class TKLibEventHandler {
     private static final ThreadLocal<Player> COLLECT_DROPS_TARGET = new ThreadLocal<>();
 
     private static boolean validate(Player player, BlockState state) {
-        return player.isCrouching() &&
+        return player.isShiftKeyDown() &&
                 state.is(TKLibBlockTags.WRENCH_BREAKS_INSTANTLY) &&
                 player.getMainHandItem().is(TKLibItemTags.TOOLS_WRENCH);
     }
