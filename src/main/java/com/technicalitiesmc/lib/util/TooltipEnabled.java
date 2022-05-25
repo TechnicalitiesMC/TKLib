@@ -30,6 +30,15 @@ public interface TooltipEnabled {
 
     }
 
+    record Simple(String translationKey) implements TooltipEnabled.Auto {
+
+        @Override
+        public String getTooltipTranslationKey() {
+            return translationKey();
+        }
+
+    }
+
     class BuiltIn {
 
         private static final EnumMap<DyeColor, Component> COMPONENTS = Utils.newFilledEnumMap(DyeColor.class,
