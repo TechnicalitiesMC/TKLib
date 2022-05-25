@@ -110,29 +110,32 @@ public final class InventoryHelper {
 
     public static boolean transferStack(IItemHandler src, IItemHandler dst, ItemFilter filter, PrimitiveIterator.OfInt visitOrder) {
         var extractionQuery = new ItemHandlerExtractionQuery(src);
-        var extraction = extractionQuery.extract(filter, visitOrder);
-        if (extraction.getExtracted().isEmpty()) {
-            return false;
-        }
-
         var insertionQuery = new ItemHandlerInsertionQuery(dst);
-        var insertion = insertionQuery.insert(extraction.getExtracted());
+        while (visitOrder.hasNext()) {
+            var extraction = extractionQuery.extract(filter, visitOrder);
+            if (extraction.getExtracted().isEmpty()) {
+                return false;
+            }
 
-        var extracted = extraction.getExtracted().getCount();
-        var leftover = insertion.getLeftover().getCount();
-        var inserted = extracted - leftover;
-        if (inserted == 0) {
-            return false;
+            var insertion = insertionQuery.insert(extraction.getExtracted());
+
+            var extracted = extraction.getExtracted().getCount();
+            var leftover = insertion.getLeftover().getCount();
+            var inserted = extracted - leftover;
+            if (inserted == 0) {
+                continue;
+            }
+
+            if (!extraction.commitAtMost(inserted)) {
+                continue;
+            }
+
+            insertion.commit();
+            extractionQuery.commit();
+            insertionQuery.commit();
+            return true;
         }
-
-        if (!extraction.commitAtMost(inserted)) {
-            return false;
-        }
-
-        insertion.commit();
-        extractionQuery.commit();
-        insertionQuery.commit();
-        return true;
+        return false;
     }
 
     public static ItemStack transferStack(ItemStack stack, IItemHandler dst, boolean simulate) {
