@@ -24,6 +24,18 @@ mixin {
     add sourceSets.main, 'tklib.refmap.json'
 }
 
+sourceSets {
+    main.resources { srcDir 'src/generated/resources' }
+    jeiCompat {
+        java.srcDir      project.file('src/compat/jei/java')
+        resources.srcDir project.file('src/compat/jei/resources')
+    }
+}
+
+configurations {
+    jeiCompatImplementation.extendsFrom implementation
+}
+
 minecraft {
     mappings channel: 'official', version: _mcversion
 
@@ -40,7 +52,7 @@ minecraft {
 
             mods {
                 tklib {
-                    source sourceSets.main
+                    sources(sourceSets.main, sourceSets.jeiCompat)
                 }
             }
         }
@@ -55,7 +67,7 @@ minecraft {
 
             mods {
                 tklib {
-                    source sourceSets.main
+                    sources(sourceSets.main, sourceSets.jeiCompat)
                 }
             }
         }
@@ -72,26 +84,31 @@ minecraft {
 
             mods {
                 tklib {
-                    source sourceSets.main
+                    sources(sourceSets.main, sourceSets.jeiCompat)
                 }
             }
         }
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 repositories {
     maven { url = 'https://repo.spongepowered.org/maven' }
+    maven { url = 'https://modmaven.dev' }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${_mcversion}-${_forgeversion}"
-
     annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
+
+    jeiCompatCompileOnly sourceSets.main.output
+    jeiCompatCompileOnly fg.deobf("mezz.jei:jei-${_mcversion}:${_jei_api_version}:api")
+
+    runtimeOnly sourceSets.jeiCompat.output
 }
 
 jar {
+    from sourceSets.jeiCompat.output
+    dependsOn jeiCompatClasses
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest.attributes([
         'Specification-Title'     : 'tklib',
