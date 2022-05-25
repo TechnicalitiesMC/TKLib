@@ -35,7 +35,7 @@ public class MinecraftMixin {
             var sound = state.getSoundType(mc.level, pos, mc.player);
             mc.level.playLocalSound(pos, sound.getBreakSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F, false);
 
-            missTime = 2;
+            missTime = 4;
             cir.setReturnValue(false);
             cir.cancel(); // Prevents the rest of this method, as well as the continue breaking method from running
         }
