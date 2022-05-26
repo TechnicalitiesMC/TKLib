@@ -6,6 +6,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -22,16 +23,22 @@ public class ItemSet implements Iterable<ItemSet.Entry> {
 
     private final Set<Entry> entries = Utils.newIdentityHashSet();
 
-    public int count(ItemStack stack) {
+    @Nullable
+    public Entry get(ItemStack stack) {
         if (stack.isEmpty()) {
-            return 0;
+            return null;
         }
         for (var entry : entries) {
             if (ItemHandlerHelper.canItemStacksStack(stack, entry.identifier())) {
-                return entry.amount;
+                return !entry.isEmpty() ? entry : null;
             }
         }
-        return 0;
+        return null;
+    }
+
+    public int count(ItemStack stack) {
+        var entry = get(stack);
+        return entry != null ? entry.amount() : 0;
     }
 
     public int add(ItemStack stack) {
@@ -42,11 +49,10 @@ public class ItemSet implements Iterable<ItemSet.Entry> {
         if (stack.isEmpty()) {
             return 0;
         }
-        for (var entry : entries) {
-            if (ItemHandlerHelper.canItemStacksStack(stack, entry.identifier())) {
-                entry.amount += amount;
-                return entry.amount;
-            }
+        var entry = get(stack);
+        if (entry != null) {
+            entry.amount += amount;
+            return entry.amount;
         }
         entries.add(new Entry(stack, amount));
         return amount;
@@ -60,10 +66,9 @@ public class ItemSet implements Iterable<ItemSet.Entry> {
         if (stack.isEmpty() || amount == 0) {
             return RemovalResult.NONE;
         }
-        for (var entry : entries) {
-            if (ItemHandlerHelper.canItemStacksStack(stack, entry.identifier())) {
-                return entry.shrink(amount);
-            }
+        var entry = get(stack);
+        if (entry != null) {
+            return entry.shrink(amount);
         }
         return RemovalResult.NONE;
     }
