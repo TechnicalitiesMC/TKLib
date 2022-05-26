@@ -16,7 +16,7 @@ public class TooltipOverlay extends GuiComponent implements IIngameOverlay {
     @Override
     public void render(ForgeIngameGui gui, PoseStack poseStack, float partialTick, int width, int height) {
         var mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null || !(mc.hitResult instanceof BlockHitResult blockHit)) {
+        if (mc.level == null || mc.player == null || mc.screen != null || !(mc.hitResult instanceof BlockHitResult blockHit)) {
             return;
         }
 
