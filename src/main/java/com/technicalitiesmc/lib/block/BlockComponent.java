@@ -55,6 +55,10 @@ public abstract sealed class BlockComponent {
         return InteractionResult.PASS;
     }
 
+    public boolean attack(BlockState state, Level level, BlockPos pos, Player player) {
+        return false;
+    }
+
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState prevState, boolean moving) {
     }
 

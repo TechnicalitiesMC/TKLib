@@ -171,6 +171,15 @@ public abstract class TKBlock extends Block implements BlockComponent.Context, R
     }
 
     @Override
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
+        for (var component : getComponents()) {
+            if (component.attack(state, level, pos, player)) {
+                return;
+            }
+        }
+    }
+
+    @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState prevState, boolean moving) {
         for (var component : getComponents()) {
             component.onPlace(state, level, pos, prevState, moving);
