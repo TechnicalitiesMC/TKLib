@@ -35,11 +35,11 @@ public class ItemHandlerExtractionQuery {
         this.extracted = new int[size];
     }
 
-    public Extraction extract(ItemFilter filter) {
-        return extract(filter, defaultVisitOrder(size));
+    public Extraction extractAll(ItemFilter filter) {
+        return extractAll(filter, defaultVisitOrder(size));
     }
 
-    public Extraction extract(ItemFilter filter, PrimitiveIterator.OfInt visitOrder) {
+    public Extraction extractAll(ItemFilter filter, PrimitiveIterator.OfInt visitOrder) {
         var stack = ItemStack.EMPTY;
         var extractedAmount = 0;
         var minExtracted = 0;
@@ -53,10 +53,8 @@ public class ItemHandlerExtractionQuery {
                     continue;
                 }
                 stack = items.get(i).copy();
-                var mode = matchedFilter.getMode();
-                var amount = matchedFilter.getAmount();
-                minExtracted = mode == ItemFilter.AmountMatchMode.AT_MOST ? 0 : amount;
-                maxExtracted = mode == ItemFilter.AmountMatchMode.AT_LEAST ? 64 : amount;
+                minExtracted = matchedFilter.getMinAmount();
+                maxExtracted = matchedFilter.getMaxAmount();
             } else if (!ItemHandlerHelper.canItemStacksStack(stack, getStack(i))) {
                 continue;
             }
@@ -73,6 +71,23 @@ public class ItemHandlerExtractionQuery {
         }
         stack.setCount(extractedAmount);
         return lastExtraction = new Extraction(stack, extractedAmounts, minExtracted);
+    }
+
+    public Extraction extractFirst(ItemFilter filter, PrimitiveIterator.OfInt visitOrder) {
+        while (visitOrder.hasNext()) {
+            var i = visitOrder.nextInt();
+            var matchedFilter = getMatch(i, filter);
+            if (matchedFilter == null) {
+                continue;
+            }
+            var stack = items.get(i);
+            if (stack.getCount() >= matchedFilter.getMinAmount() && stack.getCount() <= matchedFilter.getMaxAmount()) {
+                var extractedAmounts = new int[size];
+                extractedAmounts[i] = stack.getCount();
+                return lastExtraction = new Extraction(stack, extractedAmounts, matchedFilter.getMinAmount());
+            }
+        }
+        return new Extraction(ItemStack.EMPTY, null, 0);
     }
 
     public void commit() {

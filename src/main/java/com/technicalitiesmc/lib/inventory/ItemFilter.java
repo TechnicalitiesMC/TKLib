@@ -147,12 +147,14 @@ public interface ItemFilter {
     final class Simple implements ItemFilter {
 
         private final AmountMatchMode mode;
-        private final int amount;
+        private final int amount, minAmount, maxAmount;
         private final Predicate<ItemStack> predicate;
 
         private Simple(AmountMatchMode mode, int amount, Predicate<ItemStack> predicate) {
             this.mode = mode;
             this.amount = amount;
+            this.minAmount = mode == ItemFilter.AmountMatchMode.AT_MOST ? 0 : amount;
+            this.maxAmount = mode == ItemFilter.AmountMatchMode.AT_LEAST ? 64 : amount;
             this.predicate = predicate;
         }
 
@@ -166,12 +168,12 @@ public interface ItemFilter {
             return mode.test.applyAsInt(stack.getCount(), amount);
         }
 
-        public AmountMatchMode getMode() {
-            return mode;
+        public int getMinAmount() {
+            return minAmount;
         }
 
-        public int getAmount() {
-            return amount;
+        public int getMaxAmount() {
+            return maxAmount;
         }
 
     }

@@ -112,7 +112,7 @@ public final class InventoryHelper {
         var extractionQuery = new ItemHandlerExtractionQuery(src);
         var insertionQuery = new ItemHandlerInsertionQuery(dst);
         while (visitOrder.hasNext()) {
-            var extraction = extractionQuery.extract(filter, visitOrder);
+            var extraction = extractionQuery.extractFirst(filter, visitOrder);
             if (extraction.getExtracted().isEmpty()) {
                 return false;
             }
