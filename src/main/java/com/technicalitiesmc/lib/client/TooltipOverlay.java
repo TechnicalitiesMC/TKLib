@@ -6,6 +6,7 @@ import com.technicalitiesmc.lib.block.TipOverlayProvider;
 import com.technicalitiesmc.lib.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.IIngameOverlay;
@@ -25,7 +26,12 @@ public class TooltipOverlay extends GuiComponent implements IIngameOverlay {
             return;
         }
 
-        var tooltip = provider.buildOverlay(state, mc.level, blockHit.getBlockPos(), mc.player, blockHit);
+        var modifiers = new TipOverlayProvider.ModifierKeys(
+                Screen.hasShiftDown(),
+                Screen.hasControlDown(),
+                Screen.hasAltDown()
+        );
+        var tooltip = provider.buildOverlay(state, mc.level, blockHit.getBlockPos(), mc.player, blockHit, modifiers);
         if (tooltip == null) {
             return;
         }

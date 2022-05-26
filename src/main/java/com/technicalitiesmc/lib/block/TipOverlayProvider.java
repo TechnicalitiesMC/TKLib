@@ -13,7 +13,10 @@ import java.util.List;
 public interface TipOverlayProvider {
 
     @Nullable
-    Overlay buildOverlay(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit);
+    Overlay buildOverlay(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, ModifierKeys modifiers);
+
+    record ModifierKeys(boolean shift, boolean ctrl, boolean alt) {
+    }
 
     record Overlay(List<Component> lines) {
     }
