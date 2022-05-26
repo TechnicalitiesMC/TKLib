@@ -81,9 +81,13 @@ public class ItemHandlerExtractionQuery {
                 continue;
             }
             var stack = items.get(i);
-            if (stack.getCount() >= matchedFilter.getMinAmount() && stack.getCount() <= matchedFilter.getMaxAmount()) {
+            if (stack.getCount() >= matchedFilter.getMinAmount()) {
                 var extractedAmounts = new int[size];
-                extractedAmounts[i] = stack.getCount();
+                var amount = Math.min(stack.getCount(), matchedFilter.getMaxAmount());
+                extractedAmounts[i] = amount;
+                if (amount != stack.getCount()) {
+                    stack = stack.copy().split(amount);
+                }
                 return lastExtraction = new Extraction(stack, extractedAmounts, matchedFilter.getMinAmount());
             }
         }

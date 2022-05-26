@@ -55,7 +55,7 @@ public class ItemHandlerInsertionQuery {
 
             var totalInserted = stack.copy();
             totalInserted.setCount(alreadyInserted.getCount() + maxInserted);
-            var totalLeftover = inventory.insertItem(i, totalInserted, true);
+            var totalLeftover = totalInserted.isEmpty() ? ItemStack.EMPTY : inventory.insertItem(i, totalInserted, true);
             if (totalLeftover.getCount() > maxInserted) {
                 continue;
             }
