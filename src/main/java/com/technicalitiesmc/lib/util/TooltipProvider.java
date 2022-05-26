@@ -8,11 +8,11 @@ import net.minecraft.world.item.DyeColor;
 import java.util.EnumMap;
 import java.util.List;
 
-public interface TooltipEnabled {
+public interface TooltipProvider {
 
     void addTooltip(List<Component> tooltip);
 
-    interface Auto extends TooltipEnabled {
+    interface Auto extends TooltipProvider {
 
         String getTooltipTranslationKey();
 
@@ -30,7 +30,7 @@ public interface TooltipEnabled {
 
     }
 
-    record Simple(String translationKey) implements TooltipEnabled.Auto {
+    record Simple(String translationKey) implements TooltipProvider.Auto {
 
         @Override
         public String getTooltipTranslationKey() {
@@ -45,7 +45,7 @@ public interface TooltipEnabled {
                 color -> new TranslatableComponent("tooltip." + TKLib.MODID + ".color." + color.getSerializedName())
         );
 
-        public static TooltipEnabled of(DyeColor dye) {
+        public static TooltipProvider of(DyeColor dye) {
             var component = nameOf(dye);
             return list -> list.add(component);
         }

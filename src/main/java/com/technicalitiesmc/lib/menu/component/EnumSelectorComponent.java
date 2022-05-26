@@ -3,7 +3,7 @@ package com.technicalitiesmc.lib.menu.component;
 import com.technicalitiesmc.lib.client.screen.widget.EnumSelectorWidget;
 import com.technicalitiesmc.lib.client.screen.widget.Widget;
 import com.technicalitiesmc.lib.menu.MenuComponent;
-import com.technicalitiesmc.lib.util.TooltipEnabled;
+import com.technicalitiesmc.lib.util.TooltipProvider;
 import com.technicalitiesmc.lib.util.value.Reference;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -19,11 +19,11 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
     private final List<E> values;
     private final E defaultValue;
     @Nullable
-    private final Function<E, TooltipEnabled> tooltipProvider;
+    private final Function<E, TooltipProvider> tooltipProvider;
 
     public EnumSelectorComponent(int x, int y, int width, int height, int u, int v,
                                  Reference<E> reference, List<E> values, E defaultValue,
-                                 @Nullable Function<E, TooltipEnabled> tooltipProvider) {
+                                 @Nullable Function<E, TooltipProvider> tooltipProvider) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -38,7 +38,7 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
 
     public EnumSelectorComponent(int x, int y, int width, int height, int u, int v,
                                  Reference<E> reference, E defaultValue,
-                                 @Nullable Function<E, TooltipEnabled> tooltipProvider) {
+                                 @Nullable Function<E, TooltipProvider> tooltipProvider) {
         this(x, y, width, height, u, v, reference, (List) List.of(reference.get().getClass().getEnumConstants()), defaultValue, tooltipProvider);
     }
 

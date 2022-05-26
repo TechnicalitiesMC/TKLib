@@ -1,7 +1,7 @@
 package com.technicalitiesmc.lib.client.screen.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.technicalitiesmc.lib.util.TooltipEnabled;
+import com.technicalitiesmc.lib.util.TooltipProvider;
 import com.technicalitiesmc.lib.util.value.Reference;
 import net.minecraft.network.chat.Component;
 
@@ -17,11 +17,11 @@ public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
     private final List<E> values;
     private final E defaultValue;
     @Nullable
-    private final Function<E, TooltipEnabled> tooltipProvider;
+    private final Function<E, TooltipProvider> tooltipProvider;
 
     public EnumSelectorWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier enabled,
                               Reference<E> reference, List<E> values, E defaultValue,
-                              @Nullable Function<E, TooltipEnabled> tooltipProvider) {
+                              @Nullable Function<E, TooltipProvider> tooltipProvider) {
         super(x, y, width, height, enabled);
         this.u = u;
         this.v = v;

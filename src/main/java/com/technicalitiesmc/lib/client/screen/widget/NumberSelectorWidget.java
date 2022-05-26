@@ -1,7 +1,7 @@
 package com.technicalitiesmc.lib.client.screen.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.technicalitiesmc.lib.util.TooltipEnabled;
+import com.technicalitiesmc.lib.util.TooltipProvider;
 import com.technicalitiesmc.lib.util.value.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,10 +17,10 @@ public class NumberSelectorWidget extends SimpleWidget {
     private final Reference<Integer> value;
     private final Range<Integer> range;
     @Nullable
-    private final TooltipEnabled tooltipProvider;
+    private final TooltipProvider tooltipProvider;
 
     public NumberSelectorWidget(int x, int y, int width, int height, BooleanSupplier enabled, Reference<Integer> value,
-                                Range<Integer> range, @Nullable TooltipEnabled tooltipProvider) {
+                                Range<Integer> range, @Nullable TooltipProvider tooltipProvider) {
         super(x, y, width, height, enabled);
         this.value = value;
         this.range = range;

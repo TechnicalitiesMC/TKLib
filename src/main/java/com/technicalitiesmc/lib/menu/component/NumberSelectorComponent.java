@@ -3,7 +3,7 @@ package com.technicalitiesmc.lib.menu.component;
 import com.technicalitiesmc.lib.client.screen.widget.NumberSelectorWidget;
 import com.technicalitiesmc.lib.client.screen.widget.Widget;
 import com.technicalitiesmc.lib.menu.MenuComponent;
-import com.technicalitiesmc.lib.util.TooltipEnabled;
+import com.technicalitiesmc.lib.util.TooltipProvider;
 import com.technicalitiesmc.lib.util.value.Reference;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.commons.lang3.Range;
@@ -17,11 +17,11 @@ public class NumberSelectorComponent extends MenuComponent {
     private final Reference<Integer> reference;
     private final Range<Integer> range;
     @Nullable
-    private final TooltipEnabled tooltipProvider;
+    private final TooltipProvider tooltipProvider;
 
     public NumberSelectorComponent(int x, int y, int width, int height,
                                    Reference<Integer> reference, Range<Integer> range,
-                                   @Nullable TooltipEnabled tooltipProvider) {
+                                   @Nullable TooltipProvider tooltipProvider) {
         this.x = x;
         this.y = y;
         this.width = width;
