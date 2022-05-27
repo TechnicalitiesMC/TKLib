@@ -55,7 +55,7 @@ public class NumberSelectorComponent extends MenuComponent {
         reference.set(value);
         notifyServer(buf -> {
             buf.writeVarInt(value);
-        });
+        }, 10);
     }
 
 }

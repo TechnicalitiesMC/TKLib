@@ -67,7 +67,7 @@ public class EnumSelectorComponent<E extends Enum<E>> extends MenuComponent {
         reference.set(value);
         notifyServer(buf -> {
             buf.writeEnum(value);
-        });
+        }, 10);
     }
 
 }

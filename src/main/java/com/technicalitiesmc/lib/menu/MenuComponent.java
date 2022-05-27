@@ -17,6 +17,8 @@ public abstract class MenuComponent {
 
     int id;
     private BooleanSupplier enabled = () -> true;
+    private int delayUntilSend = -1;
+    private byte[] bytesToSend = null;
 
     public abstract Supplier<Widget> widgetSupplier();
 
@@ -24,13 +26,38 @@ public abstract class MenuComponent {
 
     public abstract void onEvent(FriendlyByteBuf buf);
 
+    public void clientTick() {
+        if (delayUntilSend > 0) {
+            if (--delayUntilSend == 0) {
+                TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytesToSend);
+                bytesToSend = null;
+            }
+        }
+    }
+
+    public void onClientClosed() {
+        if (delayUntilSend >= 0) {
+            TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytesToSend);
+            bytesToSend = null;
+        }
+    }
+
     protected final void notifyServer(Consumer<FriendlyByteBuf> writer) {
+        notifyServer(writer, 0);
+    }
+
+    protected final void notifyServer(Consumer<FriendlyByteBuf> writer, int delay) {
         var buf = new FriendlyByteBuf(Unpooled.buffer());
         writer.accept(buf);
         var bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes);
         buf.release();
-        TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytes);
+        if (delay == 0) {
+            TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytes);
+        } else {
+            delayUntilSend = delay;
+            bytesToSend = bytes;
+        }
     }
 
     public final boolean isEnabled() {

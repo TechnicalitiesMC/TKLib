@@ -55,6 +55,22 @@ public class TKMenuScreen<T extends TKMenu> extends AbstractContainerScreen<T> {
     }
 
     @Override
+    protected void containerTick() {
+        super.containerTick();
+        for (var component : menu.components()) {
+            component.clientTick();
+        }
+    }
+
+    @Override
+    public void onClose() {
+        for (var component : menu.components()) {
+            component.onClientClosed();
+        }
+        super.onClose();
+    }
+
+    @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
