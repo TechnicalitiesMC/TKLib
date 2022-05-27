@@ -39,18 +39,18 @@ public class EnumSelectorWidget<E extends Enum<E>> extends SimpleWidget {
 
     @Override
     public void onClicked(double x, double y, int button) {
-        if (button == 0) {
-            cycle(true);
-        } else if (button == 1) {
-            cycle(false);
-        } else if (button == 2) {
-            reference.set(defaultValue);
+        switch (button) {
+            case 0, 1 -> cycle(button == 0);
+            case 2 -> reference.set(defaultValue);
+            default -> { return; }
         }
+        playClickSound();
     }
 
     @Override
     public boolean onMouseScrolled(double x, double y, double amount) {
         cycle(amount > 0);
+        playClickSound(0.8F, 0.2F);
         return true;
     }
 

@@ -1,7 +1,10 @@
 package com.technicalitiesmc.lib.client.screen.widget;
 
 import com.technicalitiesmc.lib.math.Vec2i;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.function.BooleanSupplier;
 
@@ -48,6 +51,15 @@ public abstract class SimpleWidget extends GuiComponent implements Widget {
             return true;
         }
         return false;
+    }
+
+    protected final void playClickSound() {
+        playClickSound(1, 1);
+    }
+
+    protected final void playClickSound(float pitch, float volume) {
+        var soundManager = Minecraft.getInstance().getSoundManager();
+        soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, pitch, volume * 0.25F));
     }
 
 }

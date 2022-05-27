@@ -36,6 +36,7 @@ public class NumberSelectorWidget extends SimpleWidget {
             } else {
                 value.set(range.getMinimum());
             }
+            playClickSound();
         }
     }
 
@@ -44,6 +45,7 @@ public class NumberSelectorWidget extends SimpleWidget {
         var direction = (int) Math.signum(amount);
         var scale = Screen.hasShiftDown() ? 8 : 1;
         value.set(range.fit(value.get() + direction * scale));
+        playClickSound(0.8F, 0.2F);
         return true;
     }
 

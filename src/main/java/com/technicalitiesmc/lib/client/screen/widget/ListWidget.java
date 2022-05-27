@@ -37,6 +37,7 @@ public class ListWidget<T extends ListWidget.Entry> extends SimpleWidget {
         var actualEntry = viewSpaceEntry + scrolled;
         var entryCount = Iterators.size(entries.iterator());
         selectedEntry.set(actualEntry <= entryCount ? actualEntry : -1);
+        playClickSound();
     }
 
     @Override
