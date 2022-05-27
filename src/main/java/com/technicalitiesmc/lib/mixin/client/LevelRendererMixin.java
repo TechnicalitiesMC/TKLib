@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.culling.Frustum;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,8 +29,9 @@ public class LevelRendererMixin {
     private Minecraft minecraft;
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;endLastBatch()V"))
-    private void renderTrinkets(PoseStack poseStack, float partialTick, long $1, boolean $2, Camera camera, GameRenderer $4, LightTexture $5, Matrix4f $6, CallbackInfo ci) {
-        LevelOverlayRenderManager.renderLevelOverlays(minecraft.level, minecraft.player, renderBuffers.bufferSource(), poseStack, camera, partialTick);
+    private void renderTrinkets(PoseStack poseStack, float partialTick, long $1, boolean $2, Camera camera, GameRenderer $4, LightTexture $5, Matrix4f projectionMatrix, CallbackInfo ci) {
+        var frustum = new Frustum(poseStack.last().pose(), projectionMatrix);
+        LevelOverlayRenderManager.renderLevelOverlays(minecraft.level, minecraft.player, renderBuffers.bufferSource(), poseStack, camera, frustum, partialTick);
     }
 
 }
