@@ -9,23 +9,22 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 
-version = "${_version}+${_mcversion}"
-group = 'com.technicalitiesmc'
-archivesBaseName = 'TKLib'
+project.ext {
+    modid = 'tklib'
+    group = 'com.technicalitiesmc'
+    name = 'lib'
+    archiveName = 'TKLib'
+    author = 'amadornes'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-mixin {
-    add sourceSets.main, 'tklib.refmap.json'
+    mixin = true
+    accessTransformer = true
+    javaVersion = 17
 }
 
+apply from: 'generic_build.gradle'
+
 sourceSets {
-    main.resources { srcDir 'src/generated/resources' }
     jeiCompat {
         java.srcDir      project.file('src/compat/jei/java')
         resources.srcDir project.file('src/compat/jei/resources')
@@ -36,104 +35,18 @@ configurations {
     jeiCompatImplementation.extendsFrom implementation
 }
 
-minecraft {
-    mappings channel: 'official', version: _mcversion
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        client {
-            workingDirectory project.file('run/client')
-
-            arg '-mixin.config=tklib.mixin.json'
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                tklib {
-                    sources(sourceSets.main, sourceSets.jeiCompat)
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run/server')
-
-            arg '-mixin.config=tklib.mixin.json'
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                tklib {
-                    sources(sourceSets.main, sourceSets.jeiCompat)
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run/data')
-
-            arg '-mixin.config=tklib.mixin.json'
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'tklib', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                tklib {
-                    sources(sourceSets.main, sourceSets.jeiCompat)
-                }
-            }
-        }
-    }
-}
-
 repositories {
-    maven { url = 'https://repo.spongepowered.org/maven' }
-    maven { url = 'https://modmaven.dev' }
+    // Maven repo for JEI
+    ext.maven 'https://modmaven.dev', 'mezz.jei'
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${_mcversion}-${_forgeversion}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
-
     jeiCompatCompileOnly sourceSets.main.output
-    jeiCompatCompileOnly fg.deobf("mezz.jei:jei-${_mcversion}:${_jei_api_version}:api")
-
+    jeiCompatCompileOnly fg.deobf("mezz.jei:jei-${_mc_version}:${_jei_api_version}:api")
     runtimeOnly sourceSets.jeiCompat.output
 }
 
 jar {
     from sourceSets.jeiCompat.output
     dependsOn jeiCompatClasses
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest.attributes([
-        'Specification-Title'     : 'tklib',
-        'Specification-Vendor'    : 'amadornes',
-        'Specification-Version'   : '1',
-        'Implementation-Title'    : project.name,
-        'Implementation-Version'  : _version,
-        'Implementation-Vendor'   : 'amadornes',
-        'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-        'MixinConfigs'            : 'tklib.mixin.json'
-    ])
-}
-
-jar.finalizedBy('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'lib'
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${rootProject.projectDir}/mcmodsrepo"
-        }
-    }
 }

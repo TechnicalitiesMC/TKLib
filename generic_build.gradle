@@ -1,0 +1,203 @@
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.submodule.SubmoduleWalk
+
+import java.nio.file.Paths
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.eclipse.jgit:org.eclipse.jgit:6.1.+'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+if (project.ext.mixin) {
+    apply plugin: 'org.spongepowered.mixin'
+}
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+def gitRepo() {
+    try {
+        // Locate the git root
+        def root = project.projectDir;
+        def gitDir;
+        do {
+            gitDir = new File(root, ".git");
+            if (gitDir.exists() && gitDir.isDirectory()) {
+                break;
+            }
+            root = root.getParentFile();
+        } while (root != null);
+        // Create a repo there, and if it's the current path, return it
+        if (root == project.projectDir) {
+            return Git.open(gitDir)
+        }
+        // If we're in a submodule, find it
+        return new Git(SubmoduleWalk.getSubmoduleRepository(
+                root,
+                Paths.get(root.absolutePath).relativize(Paths.get(project.projectDir.absolutePath)).toString()
+        ))
+    } catch (Exception ignore) {
+    }
+    return null
+}
+
+def modidUC = project.ext.modid.toUpperCase()
+
+// Establish the version as 0
+// If a version git tag is present, use that instead
+// If the environment is not tagged for release, mark it as a dev version
+def versionNumber = "0"
+try(def git = gitRepo()) {
+    if (git) {
+        versionNumber = git.describe().setTags(true).setMatch("v*").setAbbrev(0).call().substring(1);
+    }
+} catch (Exception ignore) { }
+if (!System.env["${modidUC}_RELEASE"]) {
+    versionNumber += "-dev"
+}
+
+version = "${versionNumber}+${_mc_version}"
+group = project.ext.group
+archivesBaseName = project.ext.archiveName
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(project.ext.javaVersion)
+
+minecraft {
+    mappings channel: 'official', version: _mc_version
+
+    runs {
+        client {
+            workingDirectory project.file('run/client')
+        }
+        server {
+            workingDirectory project.file('run/server')
+        }
+        data {
+            workingDirectory project.file('run/data')
+            args '--mod', project.ext.modid, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+    runs.all { run ->
+        workingDirectory project.file("run/${run.name}")
+
+        property 'forge.logging.markers', 'REGISTRIES'
+        property 'forge.logging.console.level', 'debug'
+
+        mods.create(project.ext.modid) {
+            sources(sourceSets.main)
+        }
+    }
+}
+
+repositories {
+    // Allows for the creation of a maven repo with a group/module filter
+    ext.maven = { String url, String path ->
+        maven {
+            it.url = url
+            content {
+                if (path.contains(":")) {
+                    def split = path.split(':')
+                    includeModule split[0], split[1]
+                } else {
+                    includeGroup path
+                }
+            }
+        }
+    }
+    // Allows for the creation of a GPR repo with auth and a module filter
+    ext.github = { String path, String module ->
+        def gprUser = project.findProperty('gpr.user') ?: System.getenv('GPR_USER')
+        def gprKey = project.findProperty('gpr.key') ?: System.getenv('GPR_KEY')
+        if (gprUser && gprKey) {
+            def split = module.split(':')
+            maven {
+                url = "https://maven.pkg.github.com/${path}"
+                credentials {
+                    username = gprUser
+                    password = gprKey
+                }
+                content {
+                    includeModule split[0], split[1]
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${_mc_version}-${_forge_version}"
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest.attributes([
+            'Specification-Title'     : project.ext.modid,
+            'Specification-Vendor'    : project.ext.author,
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : project.name,
+            'Implementation-Version'  : versionNumber,
+            'Implementation-Vendor'   : project.ext.author,
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+    ])
+}
+
+// Ensure the jar is obfuscated at the end
+jar.finalizedBy('reobfJar')
+
+// Default obfuscated jar publication
+publishing {
+    publications {
+        obfJar(MavenPublication) {
+            artifactId = project.ext.name
+            artifact jar
+        }
+    }
+}
+
+// If a publish URL is configured, register it along with credentials if necessary
+def mavenUrl = System.env["${modidUC}_PUBLISH_URL"]
+if (mavenUrl) {
+    def mavenUser = System.env["${modidUC}_PUBLISH_USER"]
+    def mavenPass = System.env["${modidUC}_PUBLISH_PASS"]
+    publishing.repositories {
+        maven {
+            url mavenUrl
+            if (mavenUser && mavenPass) {
+                credentials {
+                    username = mavenUser
+                    passowrd = mavenPass
+                }
+            }
+        }
+    }
+}
+
+// If the project requires an access transformer, enable it
+if (project.ext.accessTransformer) {
+    minecraft {
+        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+// If the project requires a mixin, configure it and its dependencies
+if (project.ext.mixin) {
+    mixin {
+        add sourceSets.main, "${project.ext.modid}.refmap.json"
+    }
+    minecraft.runs.all {
+        arg "-mixin.config=${project.ext.modid}.mixin.json"
+    }
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/maven' }
+    }
+    dependencies {
+        annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
+    }
+    jar.manifest {
+        attributes.put('MixinConfigs', "${project.ext.modid}.mixin.json")
+    }
+}
