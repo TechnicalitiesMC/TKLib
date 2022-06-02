@@ -25,3 +25,4 @@ jobs:
           TKLIB_PUBLISH_URL: ${{ secrets.MAVEN_PUBLISH_URL }}
           TKLIB_PUBLISH_USER: ${{ secrets.MAVEN_PUBLISH_USER }}
           TKLIB_PUBLISH_PASS: ${{ secrets.MAVEN_PUBLISH_PASS }}
+          TKLIB_RELEASE: true
