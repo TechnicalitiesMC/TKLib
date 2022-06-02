@@ -169,7 +169,7 @@ if (mavenUrl) {
             if (mavenUser && mavenPass) {
                 credentials {
                     username = mavenUser
-                    passowrd = mavenPass
+                    password = mavenPass
                 }
             }
         }
