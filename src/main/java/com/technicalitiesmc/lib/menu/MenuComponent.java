@@ -27,8 +27,8 @@ public abstract class MenuComponent {
     public abstract void onEvent(FriendlyByteBuf buf);
 
     public void clientTick() {
-        if (delayUntilSend > 0) {
-            if (--delayUntilSend == 0) {
+        if (delayUntilSend >= 0) {
+            if (delayUntilSend-- == 0) {
                 TKLibNetworkHandler.sendServerboundMenuComponentMessage(id, bytesToSend);
                 bytesToSend = null;
             }
