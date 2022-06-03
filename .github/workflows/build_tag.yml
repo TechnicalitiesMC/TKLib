@@ -54,7 +54,7 @@ jobs:
         with:
           file: 'release.properties'
       - name: Extract Version From Tag
-        uses: AsasInnab/regex-action@v2
+        uses: sunil-samtani/regex-action@v2
         if: ${{ !endsWith(github.repository, '-Dev') }}
         id: version
         with:
