@@ -31,9 +31,17 @@ jobs:
           TKLIB_RELEASE: true
       - name: Create Release With Changelog
         uses: fregante/release-with-changelog@v3
+        id: create_release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-template: '- {title} ({hash})'
           template: |
             ### Changelog
             {commits}
+      - name: Upload Binaries
+        uses: NBTX/upload-release-assets@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          targets: build/libs/**.jar
