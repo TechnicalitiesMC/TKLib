@@ -30,7 +30,7 @@ jobs:
           TKLIB_PUBLISH_PASS: ${{ secrets.MAVEN_PUBLISH_PASS }}
           TKLIB_RELEASE: true
       - name: Create Release With Changelog
-        uses: fregante/release-with-changelog@v3
+        uses: amadornes/release-with-changelog@v3
         id: create_release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,3 +45,32 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           targets: build/libs/**.jar
+
+      # This whole section is skipped if we're in a dev repo
+      - name: Parse Release Properties
+        uses: amadornes/parse-properties-action@v1.0
+        if: ${{ !endsWith(github.repository, '-Dev') }}
+        id: release_props
+        with:
+          file: 'release.properties'
+      - name: Extract Version From Tag
+        uses: AsasInnab/regex-action@v2
+        if: ${{ !endsWith(github.repository, '-Dev') }}
+        id: version
+        with:
+          regex_pattern: 'refs\/tags\/v(.+)'
+          search_string: ${{ github.ref }}
+      - name: Release on CurseForge
+        uses: itsmeow/curseforge-upload@v3.1.0
+        if: ${{ !endsWith(github.repository, '-Dev') }}
+        with:
+          token: "${{ secrets.CF_API_TOKEN }}"
+          project_id: ${{ steps.release_props.outputs.cf_project }}
+          game_endpoint: "minecraft"
+          game_versions: ${{ steps.release_props.outputs.cf_versions }}
+          file_path: ${{ format(steps.release_props.outputs.file, steps.version.outputs.match_grp) }}
+          release_type: ${{ steps.release_props.outputs.cf_type }}
+          display_name: ${{ format(steps.release_props.outputs.cf_name, steps.version.outputs.match_grp) }}
+          changelog: ${{ steps.create_release.outputs.changelog }}
+          changelog_type: markdown
+          relations: ${{ steps.release_props.outputs.cf_relations }}
