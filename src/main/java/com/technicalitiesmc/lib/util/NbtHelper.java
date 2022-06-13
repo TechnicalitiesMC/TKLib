@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -31,8 +32,26 @@ public final class NbtHelper {
         return list;
     }
 
-    public static <T> Optional<T> maybe(CompoundTag tag, BiFunction<CompoundTag, String, T> function, String arg) {
-        return Optional.ofNullable(tag.contains(arg) ? function.apply(tag, arg) : null);
+    public static <T> Optional<T> maybe(CompoundTag tag, BiFunction<CompoundTag, String, T> function, String name) {
+        return Optional.ofNullable(tag.contains(name) ? function.apply(tag, name) : null);
+    }
+
+    public static void putEnum(CompoundTag tag, String name, Enum<?> value) {
+        tag.putByte(name, (byte) value.ordinal());
+    }
+
+    public static <E extends Enum<E>> E getEnum(CompoundTag tag, String name, Class<E> type) {
+        return type.getEnumConstants()[tag.getByte(name)];
+    }
+
+    public static void maybePutEnum(CompoundTag tag, String name, @Nullable Enum<?> value) {
+        if (value != null) {
+            tag.putByte(name, (byte) value.ordinal());
+        }
+    }
+
+    public static <E extends Enum<E>> Optional<E> maybeGetEnum(CompoundTag tag, String name, Class<E> type) {
+        return Optional.ofNullable(tag.contains(name) ? getEnum(tag, name, type) : null);
     }
 
 }
