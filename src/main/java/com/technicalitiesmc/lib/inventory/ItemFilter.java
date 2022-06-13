@@ -40,6 +40,21 @@ public interface ItemFilter {
     }
 
     @Nonnull
+    static ItemFilter exactly(ItemStack stack) {
+        return exactly(stack.getCount()).of(stack);
+    }
+
+    @Nonnull
+    static ItemFilter atLeast(ItemStack stack) {
+        return atLeast(stack.getCount()).of(stack);
+    }
+
+    @Nonnull
+    static ItemFilter atMost(ItemStack stack) {
+        return atMost(stack.getCount()).of(stack);
+    }
+
+    @Nonnull
     static ItemFilter anyOf(ItemFilter... filters) {
         return anyOf(Arrays.asList(filters));
     }
